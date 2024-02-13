@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
+// import Container from 'react-bootstrap/Container';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,6 +30,9 @@ const CRUD = ()=> {
     const [address1, setAddress1] = useState('');
     const [address2, setAddress2] = useState('');
     const [isActive, setIsActive] = useState(0);
+    const [gender, setGender] = useState(0); // 0 for Male, 1 for Female
+    const [maritalStatus, setMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
+
 
     //edited fields
     const [editId, editSetId] = useState('');
@@ -40,6 +43,8 @@ const CRUD = ()=> {
     const [editAddress1, editSetAddress1] = useState('');
     const [editAddress2, editSetAddress2] = useState('');
     const [editIsActive, editSetIsActive] = useState(0);
+    const [editGender, setEditGender] = useState(0); // 0 for Male, 1 for Female
+    const [editMaritalStatus, setEditMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
 
     const [data, setData] = useState([]);
 
@@ -50,7 +55,8 @@ const CRUD = ()=> {
     const getData = () =>{
         axios.get('https://localhost:7277/api/Student')
         .then((result)=>{
-            setData(result.data)
+            const activeStudents = result.data.filter(student => student.isActive === 1);
+            setData(activeStudents);
         })
         .catch((error)=>{
             console.log(error);
@@ -65,7 +71,9 @@ const CRUD = ()=> {
             "mobile": mobile,
             "address1": address1,
             "address2": address2,
-            "isActive": isActive
+            "isActive": isActive,
+            "gender": gender,
+            "maritalStatus": maritalStatus,
         }
 
         axios.post('https://localhost:7277/api/Student', data)
@@ -76,7 +84,7 @@ const CRUD = ()=> {
             //toast emitter
             toast.success('Student added.', {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -106,6 +114,8 @@ const CRUD = ()=> {
         editSetAddress1('');
         editSetAddress2('');
         editSetIsActive(0);
+        setEditGender(0);
+        setEditMaritalStatus(0);
         editSetId('');
 
     }
@@ -126,6 +136,8 @@ const CRUD = ()=> {
             editSetAddress1(result.data.address1);
             editSetAddress2(result.data.address2);
             editSetIsActive(result.data.isActive);
+            setEditGender(result.data.gender);
+            setEditMaritalStatus(result.data.maritalStatus);
             editSetId(id);
         })
         .catch((error)=>{
@@ -142,7 +154,9 @@ const CRUD = ()=> {
             "mobile": editMobile,
             "address1": editAddress1,
             "address2": editAddress2,
-            "isActive": editIsActive
+            "isActive": editIsActive,
+            "gender": editGender,
+            "maritalStatus": editMaritalStatus,
         }
 
         axios.put(`https://localhost:7277/api/Student/${editId}`, data)
@@ -152,7 +166,7 @@ const CRUD = ()=> {
             handleClose();
             toast.success('Student Updated.', {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -169,7 +183,7 @@ const CRUD = ()=> {
     const [selectedIds, setSelectedIds] = useState([]);
 
     const handleDeleteSelected = () => {
-        if(window.confirm("Are you sure?")==true){
+        if(window.confirm("Are you sure?")===true){
             selectedIds.forEach(async (id) => {
             try {
                 await  handleDelete(id);
@@ -180,7 +194,7 @@ const CRUD = ()=> {
             setSelectedIds([]);
             toast.success('Selected Student(s) Deleted.', {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 3000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -203,6 +217,41 @@ const CRUD = ()=> {
         })
     }
     
+    const handleSelectedDeactive = () => {
+        if(window.confirm("Are you sure?")===true){
+            selectedIds.forEach(async (id) => {
+            try {
+                await  handleDeactivate(id);
+            } catch (error) {
+                console.error(`Error deleting record with ID ${id}:`, error);
+            }
+            });
+            setSelectedIds([]);
+            toast.success('Selected Deactivated.', {
+                position: "bottom-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                });
+        }
+    };
+
+    const handleDeactivate = (id) =>{
+        axios.patch(`https://localhost:7277/api/Student/${id}`, [{"op": "replace","path": "/isActive","value": 0}])
+        .then((result)=>{
+            if(result.status===200){
+                getData();
+            }
+        })
+        .catch((error)=>{
+            toast.error(error);
+        })
+    }
+
     //when a record is selected
     const handleCheckboxChange = (id) => {
         const newSelectedIds = selectedIds.includes(id)
@@ -229,12 +278,28 @@ const CRUD = ()=> {
             editSetIsActive(0);
         }
     }
+    
+    const handleGenderChange = (e) => {
+        setGender(parseInt(e.target.value));
+    }
 
+    const handleEditGenderChange = (e) => {
+        setEditGender(parseInt(e.target.value));
+    }
+
+    const handleMaritalStatusChange = (e) => {
+        setMaritalStatus(parseInt(e.target.value));
+    }
+
+    const handleEditMaritalStatusChange = (e) => {
+        setEditMaritalStatus(parseInt(e.target.value));
+    }
     return(
         <Fragment>
             <h1 style={{padding:"20px"}}>Manage Students</h1>
-            <button className="btn btn-primary" onClick={handleAdd}>Add</button>
-            <button className="btn btn-danger" onClick={handleDeleteSelected}>Delete</button>
+            <button className="btn btn-primary" onClick={handleAdd}>Add</button> &nbsp;
+            <button className="btn btn-danger" onClick={handleDeleteSelected}>Delete</button> &nbsp;
+            <button className="btn btn-danger" onClick={handleSelectedDeactive}>Deactivate</button> &nbsp;
 
             <ToastContainer/>
 
@@ -265,8 +330,25 @@ const CRUD = ()=> {
                         value={address2} onChange={(e)=> setAddress2(e.target.value)} /></Col>
                     </Row>
                     <Row>
+                        <Col>
+                            <label>Gender:</label><br />
+                            <input type="radio" name="gender" value="0" checked={gender === 0} onChange={handleGenderChange} /> Male<br />
+                            <input type="radio" name="gender" value="1" checked={gender === 1} onChange={handleGenderChange} /> Female<br />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <label>Marital Status:</label><br />
+                            <select className="form-control" value={maritalStatus} onChange={handleMaritalStatusChange}>
+                                <option value={0}>Single</option>
+                                <option value={1}>Married</option>
+                                <option value={2}>Separated</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col><input type="checkbox"
-                            checked={isActive == 1 ? true : false}
+                            checked={isActive === 1 ? true : false}
                             onChange={(e)=> handleActiveChange(e)} value={isActive}
                         />
                             <label>IsActive</label>
@@ -285,14 +367,14 @@ const CRUD = ()=> {
                     <tr>
                     <th>#</th>
                     <th>Select</th>
-                    <th>id</th>
                     <th>Code</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Mobile</th>
                     <th>Address1</th>
                     <th>Address2</th>
-                    <th>isActive</th>
+                    <th>Gender</th>
+                    <th>Marital Status</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -310,14 +392,14 @@ const CRUD = ()=> {
                                         onChange={() => handleCheckboxChange(item.id)}
                                     />
                                     </td>
-                                    <td>{item.id}</td>
                                     <td>{item.code}</td>
                                     <td>{item.name}</td>
                                     <td>{item.email}</td>
                                     <td>{item.mobile}</td>
                                     <td>{item.address1}</td>
                                     <td>{item.address2}</td>
-                                    <td>{item.isActive}</td>
+                                    <td>{item.gender === 0 ? "Male" : "Female"}</td>
+                                    <td>{item.maritalStatus === 0 ? "Single" : (item.maritalStatus === 1 ? "Married" : "Separated")}</td>
                                     <td colSpan={2}>
                                         <button className="btn btn-primary" onClick={()=>handleEdit(item.id)}>Edit</button> &nbsp;
                                         {/* <button className="btn btn-danger" onClick={()=>handleDelete(item.id)}>Delete</button> */}
@@ -366,8 +448,25 @@ const CRUD = ()=> {
                         value={editAddress2} onChange={(e)=> editSetAddress2(e.target.value)} /></Col>
                     </Row>
                     <Row>
+                        <Col>
+                            <label>Gender:</label><br />
+                            <input type="radio" name="editGender" value="0" checked={editGender === 0} onChange={handleEditGenderChange} /> Male<br />
+                            <input type="radio" name="editGender" value="1" checked={editGender === 1} onChange={handleEditGenderChange} /> Female<br />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <label>Marital Status:</label><br />
+                            <select className="form-control" value={editMaritalStatus} onChange={handleEditMaritalStatusChange}>
+                                <option value={0}>Single</option>
+                                <option value={1}>Married</option>
+                                <option value={2}>Separated</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col><input type="checkbox"
-                            checked={editIsActive == 1? true : false}
+                            checked={editIsActive === 1? true : false}
                             onChange={(e)=> handleEditActiveChange(e)} value={editIsActive}
                         />
                             <label>IsActive</label>
