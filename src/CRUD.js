@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-// import Container from 'react-bootstrap/Container';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -29,9 +28,15 @@ const CRUD = ()=> {
     const [mobile, setMobile] = useState('');
     const [address1, setAddress1] = useState('');
     const [address2, setAddress2] = useState('');
-    const [isActive, setIsActive] = useState(0);
+    const [stateId, setStateId] = useState(0);
+    const [cityId, setCityId] = useState(0);
     const [gender, setGender] = useState(0); // 0 for Male, 1 for Female
     const [maritalStatus, setMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
+    const [isActive, setIsActive] = useState(0);
+    const [createdBy, setCreatedBy] = useState(0);
+    const [createdOn, setCreatedOn] = useState('');
+    const [modifiedBy, setModifiedBy] = useState(0);
+    const [modifiedOn, setModifiedOn] = useState('');
 
 
     //edited fields
@@ -42,9 +47,15 @@ const CRUD = ()=> {
     const [editMobile, editSetMobile] = useState('');
     const [editAddress1, editSetAddress1] = useState('');
     const [editAddress2, editSetAddress2] = useState('');
+    const [editStateId, editSetStateId] = useState(0);
+    const [editCityId, editSetCityId] = useState(0);
+    const [editGender, editSetGender] = useState(0); // 0 for Male, 1 for Female
+    const [editMaritalStatus, editSetMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
     const [editIsActive, editSetIsActive] = useState(0);
-    const [editGender, setEditGender] = useState(0); // 0 for Male, 1 for Female
-    const [editMaritalStatus, setEditMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
+    const [editCreatedBy, editSetCreatedBy] = useState(0);
+    const [editCreatedOn, editSetCreatedOn] = useState('');
+    const [editModifiedBy, editSetModifiedBy] = useState(0);
+    const [editModifiedOn, editSetModifiedOn] = useState('');
 
     const [data, setData] = useState([]);
 
@@ -63,6 +74,8 @@ const CRUD = ()=> {
         })
     }
 
+    const currentDate = new Date().toISOString();
+
     const handleSave = () =>{
         const data = {
             "code": code,
@@ -72,14 +85,20 @@ const CRUD = ()=> {
             "address1": address1,
             "address2": address2,
             "isActive": isActive,
+            "stateId": stateId,
+            "cityId": cityId,
             "gender": gender,
             "maritalStatus": maritalStatus,
+            "createdBy": createdBy,
+            "createdOn": currentDate,
+            "modifiedBy": modifiedBy,
+            "modifiedOn": currentDate
         }
 
         axios.post('https://localhost:7277/api/Student', data)
         .then((result)=>{
             getData();
-            clear();
+            //clear();
             handleCloseAdd();
             //toast emitter
             toast.success('Student added.', {
@@ -94,6 +113,7 @@ const CRUD = ()=> {
                 });
         })
         .catch((error)=>{
+            console.log("not saved")
             toast.error(error);
         })
     }
@@ -107,6 +127,15 @@ const CRUD = ()=> {
         setAddress1('');
         setAddress2('');
         setIsActive(0);
+        setGender(0);
+        setMaritalStatus(0);
+        setStateId(0);
+        setCityId(0);
+        setCreatedBy(0);
+        setCreatedOn('');
+        setModifiedBy(0);
+        setModifiedOn('');
+
         editSetCode('');
         editSetName('');
         editSetEmail('');
@@ -114,8 +143,14 @@ const CRUD = ()=> {
         editSetAddress1('');
         editSetAddress2('');
         editSetIsActive(0);
-        setEditGender(0);
-        setEditMaritalStatus(0);
+        editSetGender(0);
+        editSetMaritalStatus(0);
+        editSetStateId(0);
+        editSetCityId(0);
+        editSetCreatedBy(0);
+        editSetCreatedOn('');
+        editSetModifiedBy(0);
+        editSetModifiedOn('');
         editSetId('');
 
     }
@@ -136,9 +171,17 @@ const CRUD = ()=> {
             editSetAddress1(result.data.address1);
             editSetAddress2(result.data.address2);
             editSetIsActive(result.data.isActive);
-            setEditGender(result.data.gender);
-            setEditMaritalStatus(result.data.maritalStatus);
+
+            editSetGender(result.data.gender);
+            editSetMaritalStatus(result.data.maritalStatus);
+            editSetStateId(result.data.stateId);
+            editSetCityId(result.data.cityId);
+            editSetCreatedBy(result.data.createdBy);
+            editSetCreatedOn(result.data.createdOn);
+            editSetModifiedBy(result.data.modifiedBy);
+            editSetModifiedOn(result.data.modifiedOn);
             editSetId(id);
+                
         })
         .catch((error)=>{
             toast.error(error);
@@ -157,6 +200,12 @@ const CRUD = ()=> {
             "isActive": editIsActive,
             "gender": editGender,
             "maritalStatus": editMaritalStatus,
+            "stateId": editStateId,
+            "cityId": editCityId,
+            "createdBy": editCreatedBy,
+            "createdOn": editCreatedOn,
+            "modifiedBy": editModifiedBy,
+            "modifiedOn": currentDate
         }
 
         axios.put(`https://localhost:7277/api/Student/${editId}`, data)
@@ -284,7 +333,7 @@ const CRUD = ()=> {
     }
 
     const handleEditGenderChange = (e) => {
-        setEditGender(parseInt(e.target.value));
+        editSetGender(parseInt(e.target.value));
     }
 
     const handleMaritalStatusChange = (e) => {
@@ -292,7 +341,7 @@ const CRUD = ()=> {
     }
 
     const handleEditMaritalStatusChange = (e) => {
-        setEditMaritalStatus(parseInt(e.target.value));
+        editSetMaritalStatus(parseInt(e.target.value));
     }
     return(
         <Fragment>
@@ -347,6 +396,26 @@ const CRUD = ()=> {
                         </Col>
                     </Row>
                     <Row>
+                        <Col>
+                            <label>State</label><br />
+                            <select className="form-control" value={stateId} onChange={(e)=> setStateId(parseInt(e.target.value))}>
+                                <option value={1}>dummy</option>
+                                <option value={2}>dummy</option>
+                                <option value={3}>dummy</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <label>City</label><br />
+                            <select className="form-control" value={cityId} onChange={(e)=>setCityId(parseInt(e.target.value))}>
+                                <option value={1}>dummy</option>
+                                <option value={2}>dummy</option>
+                                <option value={3}>dummy</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col><input type="checkbox"
                             checked={isActive === 1 ? true : false}
                             onChange={(e)=> handleActiveChange(e)} value={isActive}
@@ -373,8 +442,14 @@ const CRUD = ()=> {
                     <th>Mobile</th>
                     <th>Address1</th>
                     <th>Address2</th>
+                    <th>State</th>
+                    <th>City</th>
                     <th>Gender</th>
                     <th>Marital Status</th>
+                    <th>CreatedBy</th>
+                    <th>CreatedOn</th>
+                    <th>ModifiedBy</th>
+                    <th>ModifiedOn</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -398,8 +473,14 @@ const CRUD = ()=> {
                                     <td>{item.mobile}</td>
                                     <td>{item.address1}</td>
                                     <td>{item.address2}</td>
+                                    <td>{item.stateId}</td>
+                                    <td>{item.cityId}</td>
                                     <td>{item.gender === 0 ? "Male" : "Female"}</td>
                                     <td>{item.maritalStatus === 0 ? "Single" : (item.maritalStatus === 1 ? "Married" : "Separated")}</td>
+                                    <td>{item.createdBy}</td>
+                                    <td>{item.createdOn}</td>
+                                    <td>{item.modifiedBy}</td>
+                                    <td>{item.modifiedOn}</td>
                                     <td colSpan={2}>
                                         <button className="btn btn-primary" onClick={()=>handleEdit(item.id)}>Edit</button> &nbsp;
                                         {/* <button className="btn btn-danger" onClick={()=>handleDelete(item.id)}>Delete</button> */}
@@ -461,6 +542,26 @@ const CRUD = ()=> {
                                 <option value={0}>Single</option>
                                 <option value={1}>Married</option>
                                 <option value={2}>Separated</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <label>State</label><br />
+                            <select className="form-control" value={editStateId} onChange={(e)=>editSetStateId(parseInt(e.target.value))}>
+                                <option value={1}>dummy</option>
+                                <option value={2}>dummy</option>
+                                <option value={3}>dummy</option>
+                            </select>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <label>City</label><br />
+                            <select className="form-control" value={editCityId} onChange={(e)=> editSetCityId(parseInt(e.target.value))}>
+                                <option value={1}>dummy</option>
+                                <option value={2}>dummy</option>
+                                <option value={3}>dummy</option>
                             </select>
                         </Col>
                     </Row>
