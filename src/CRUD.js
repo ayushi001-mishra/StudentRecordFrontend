@@ -381,8 +381,8 @@ const CRUD = ()=> {
                     <Row>
                         <Col>
                             <label>Gender:</label><br />
-                            <input type="radio" name="gender" value="0" checked={gender === 0} onChange={handleGenderChange} /> Male<br />
-                            <input type="radio" name="gender" value="1" checked={gender === 1} onChange={handleGenderChange} /> Female<br />
+                            <input type="radio" name="gender" value="0" checked={gender === 0} onChange={handleGenderChange} /> Male &nbsp;
+                            <input type="radio" name="gender" value="1" checked={gender === 1} onChange={handleGenderChange} /> Female
                         </Col>
                     </Row>
                     <Row>
@@ -446,10 +446,6 @@ const CRUD = ()=> {
                     <th>City</th>
                     <th>Gender</th>
                     <th>Marital Status</th>
-                    <th>CreatedBy</th>
-                    <th>CreatedOn</th>
-                    <th>ModifiedBy</th>
-                    <th>ModifiedOn</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -477,10 +473,6 @@ const CRUD = ()=> {
                                     <td>{item.cityId}</td>
                                     <td>{item.gender === 0 ? "Male" : "Female"}</td>
                                     <td>{item.maritalStatus === 0 ? "Single" : (item.maritalStatus === 1 ? "Married" : "Separated")}</td>
-                                    <td>{item.createdBy}</td>
-                                    <td>{item.createdOn}</td>
-                                    <td>{item.modifiedBy}</td>
-                                    <td>{item.modifiedOn}</td>
                                     <td colSpan={2}>
                                         <button className="btn btn-primary" onClick={()=>handleEdit(item.id)}>Edit</button> &nbsp;
                                         {/* <button className="btn btn-danger" onClick={()=>handleDelete(item.id)}>Delete</button> */}
@@ -531,8 +523,8 @@ const CRUD = ()=> {
                     <Row>
                         <Col>
                             <label>Gender:</label><br />
-                            <input type="radio" name="editGender" value="0" checked={editGender === 0} onChange={handleEditGenderChange} /> Male<br />
-                            <input type="radio" name="editGender" value="1" checked={editGender === 1} onChange={handleEditGenderChange} /> Female<br />
+                            <input type="radio" name="editGender" value="0" checked={editGender === 0} onChange={handleEditGenderChange} /> Male &nbsp;
+                            <input type="radio" name="editGender" value="1" checked={editGender === 1} onChange={handleEditGenderChange} /> Female
                         </Col>
                     </Row>
                     <Row>
