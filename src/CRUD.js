@@ -343,6 +343,41 @@ const CRUD = ()=> {
     const handleEditMaritalStatusChange = (e) => {
         editSetMaritalStatus(parseInt(e.target.value));
     }
+
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+
+    useEffect(() => {
+        // Fetch states on component mount
+        axios.get('https://localhost:7277/api/State')
+            .then((result) => {
+                setStates(result.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
+     // Function to fetch cities based on selected state
+     const handleStateChange = (stateId) => {
+        axios.get(`https://localhost:7277/api/City/${stateId}`)
+            .then((result) => {
+                setCities(result.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    // JSX code for state and city dropdowns
+    const stateOptions = states.map((state) => (
+        <option key={state.sId} value={state.sId}>{state.name}</option>
+    ));
+
+    const cityOptions = cities.map((city) => (
+        <option key={city.cId} value={city.cId}>{city.name}</option>
+    ));
+
     return(
         <Fragment>
             <h1 style={{padding:"20px"}}>Manage Students</h1>
@@ -380,7 +415,6 @@ const CRUD = ()=> {
                     </Row>
                     <Row>
                         <Col>
-                            <label>Gender:</label><br />
                             <input type="radio" name="gender" value="0" checked={gender === 0} onChange={handleGenderChange} /> Male &nbsp;
                             <input type="radio" name="gender" value="1" checked={gender === 1} onChange={handleGenderChange} /> Female
                         </Col>
@@ -389,6 +423,7 @@ const CRUD = ()=> {
                         <Col>
                             <label>Marital Status:</label><br />
                             <select className="form-control" value={maritalStatus} onChange={handleMaritalStatusChange}>
+                                <option value="">--Select State--</option>
                                 <option value={0}>Single</option>
                                 <option value={1}>Married</option>
                                 <option value={2}>Separated</option>
@@ -398,20 +433,21 @@ const CRUD = ()=> {
                     <Row>
                         <Col>
                             <label>State</label><br />
-                            <select className="form-control" value={stateId} onChange={(e)=> setStateId(parseInt(e.target.value))}>
-                                <option value={1}>dummy</option>
-                                <option value={2}>dummy</option>
-                                <option value={3}>dummy</option>
+                            <select className="form-control" value={stateId} onChange={(e) => {
+                                setStateId(parseInt(e.target.value));
+                                handleStateChange(parseInt(e.target.value)); // Fetching cities on state change
+                            }}>
+                                <option value="">--Select State--</option>
+                                {stateOptions}
                             </select>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             <label>City</label><br />
-                            <select className="form-control" value={cityId} onChange={(e)=>setCityId(parseInt(e.target.value))}>
-                                <option value={1}>dummy</option>
-                                <option value={2}>dummy</option>
-                                <option value={3}>dummy</option>
+                            <select className="form-control" value={cityId} onChange={(e) => setCityId(parseInt(e.target.value))}>
+                                <option value="">--Select City--</option>
+                                {cityOptions}
                             </select>
                         </Col>
                     </Row>
@@ -489,7 +525,7 @@ const CRUD = ()=> {
             {/*model for edit */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                <Modal.Title>Modified / Update</Modal.Title>
+                <Modal.Title>Edit</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
@@ -522,7 +558,6 @@ const CRUD = ()=> {
                     </Row>
                     <Row>
                         <Col>
-                            <label>Gender:</label><br />
                             <input type="radio" name="editGender" value="0" checked={editGender === 0} onChange={handleEditGenderChange} /> Male &nbsp;
                             <input type="radio" name="editGender" value="1" checked={editGender === 1} onChange={handleEditGenderChange} /> Female
                         </Col>
@@ -531,6 +566,7 @@ const CRUD = ()=> {
                         <Col>
                             <label>Marital Status:</label><br />
                             <select className="form-control" value={editMaritalStatus} onChange={handleEditMaritalStatusChange}>
+                            <option value="">--Select State--</option>
                                 <option value={0}>Single</option>
                                 <option value={1}>Married</option>
                                 <option value={2}>Separated</option>
@@ -540,23 +576,25 @@ const CRUD = ()=> {
                     <Row>
                         <Col>
                             <label>State</label><br />
-                            <select className="form-control" value={editStateId} onChange={(e)=>editSetStateId(parseInt(e.target.value))}>
-                                <option value={1}>dummy</option>
-                                <option value={2}>dummy</option>
-                                <option value={3}>dummy</option>
+                            <select className="form-control" value={editStateId} onChange={(e) => {
+                                editSetStateId(parseInt(e.target.value));
+                                handleStateChange(parseInt(e.target.value)); // Fetch cities on state change
+                            }}>
+                                <option value="">--Select State--</option>
+                                {stateOptions}
                             </select>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
                             <label>City</label><br />
-                            <select className="form-control" value={editCityId} onChange={(e)=> editSetCityId(parseInt(e.target.value))}>
-                                <option value={1}>dummy</option>
-                                <option value={2}>dummy</option>
-                                <option value={3}>dummy</option>
+                            <select className="form-control" value={editCityId} onChange={(e) => editSetCityId(parseInt(e.target.value))}>
+                                <option value="">--Select City--</option>
+                                {cityOptions}
                             </select>
                         </Col>
                     </Row>
+
                     <Row>
                         <Col><input type="checkbox"
                             checked={editIsActive === 1? true : false}
