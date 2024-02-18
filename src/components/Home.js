@@ -9,14 +9,14 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CRUD = ()=> {
+const Home = ()=> {
 
-    //for edit
+    //for edit model
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    //for add
+    //for add model
     const [add, setAdd] = useState(false);
     const handleCloseAdd = () => setAdd(false);
     const handleShowAdd = () => setAdd(true);
@@ -30,8 +30,8 @@ const CRUD = ()=> {
     const [address2, setAddress2] = useState('');
     const [stateId, setStateId] = useState(0);
     const [cityId, setCityId] = useState(0);
-    const [gender, setGender] = useState(0); // 0 for Male, 1 for Female
-    const [maritalStatus, setMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
+    const [gender, setGender] = useState(2); 
+    const [maritalStatus, setMaritalStatus] = useState(4); 
     const [isActive, setIsActive] = useState(0);
     const [createdBy, setCreatedBy] = useState(0);
     const [createdOn, setCreatedOn] = useState('');
@@ -49,18 +49,31 @@ const CRUD = ()=> {
     const [editAddress2, editSetAddress2] = useState('');
     const [editStateId, editSetStateId] = useState(0);
     const [editCityId, editSetCityId] = useState(0);
-    const [editGender, editSetGender] = useState(0); // 0 for Male, 1 for Female
-    const [editMaritalStatus, editSetMaritalStatus] = useState(0); // 0 for Single, 1 for Married, 2 for Separated
+    const [editGender, editSetGender] = useState(2); 
+    const [editMaritalStatus, editSetMaritalStatus] = useState(4); 
     const [editIsActive, editSetIsActive] = useState(0);
     const [editCreatedBy, editSetCreatedBy] = useState(0);
     const [editCreatedOn, editSetCreatedOn] = useState('');
     const [editModifiedBy, editSetModifiedBy] = useState(0);
     const [editModifiedOn, editSetModifiedOn] = useState('');
+    
+    //for state and city dropdown display 
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]); 
 
+    //for student record
     const [data, setData] = useState([]);
 
     useEffect(()=>{
         getData();
+
+        axios.get('https://localhost:7277/api/State')
+        .then((result) => {
+            setStates(result.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     }, []);
 
     const getData = () =>{
@@ -77,6 +90,44 @@ const CRUD = ()=> {
     const currentDate = new Date().toISOString();
 
     const handleSave = () =>{
+        //Validations
+        if (!name) {
+            document.getElementById("validation").innerHTML="Please enter name*";
+            return;
+        }
+          
+        const emailRegex = /^[a-zA-Z0-9_]+[@][a-z]+[.][a-z]{2,3}$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById("validation").innerHTML="Please enter a valid email*";
+            return;
+        }
+          
+        const mobileRegex = /^[6-9][0-9]{9}$/;
+        if (!mobileRegex.test(mobile)) {
+            document.getElementById("validation").innerHTML="Please enter a valid 10-digit mobile number*";
+            return;
+        }
+          
+        if (!address1 || !address2) {
+            document.getElementById("validation").innerHTML="Address1 and Address2 are required fields*";
+            return;
+        }
+
+        if (gender===2) {
+            document.getElementById("validation").innerHTML="Please select Gender*";
+            return;
+        }
+
+        if (maritalStatus===4) {
+            document.getElementById("validation").innerHTML="Please select Marital Status*";
+            return;
+        }
+
+        if (!stateId || !cityId) {
+            document.getElementById("validation").innerHTML="Please select State and City*";
+            return;
+        }
+        
         const data = {
             "code": code,
             "name": name,
@@ -98,20 +149,21 @@ const CRUD = ()=> {
         axios.post('https://localhost:7277/api/Student', data)
         .then((result)=>{
             getData();
-            //clear();
+            clear();
             handleCloseAdd();
             //toast emitter
             toast.success('Student added.', {
-                position: "bottom-right",
-                autoClose: 3000,
+                position: "top-right",
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
+                pauseOnHover: false,
                 draggable: true,
                 progress: undefined,
                 theme: "dark",
-                });
-        })
+            });
+         })
+    
         .catch((error)=>{
             console.log("not saved")
             toast.error(error);
@@ -127,8 +179,8 @@ const CRUD = ()=> {
         setAddress1('');
         setAddress2('');
         setIsActive(0);
-        setGender(0);
-        setMaritalStatus(0);
+        setGender(2);
+        setMaritalStatus(4);
         setStateId(0);
         setCityId(0);
         setCreatedBy(0);
@@ -143,8 +195,8 @@ const CRUD = ()=> {
         editSetAddress1('');
         editSetAddress2('');
         editSetIsActive(0);
-        editSetGender(0);
-        editSetMaritalStatus(0);
+        editSetGender(2);
+        editSetMaritalStatus(4);
         editSetStateId(0);
         editSetCityId(0);
         editSetCreatedBy(0);
@@ -189,8 +241,37 @@ const CRUD = ()=> {
     }
 
     const handleUpdate = () =>{
+        if (!editName) {
+            document.getElementById("validation").innerHTML="Please enter name*";
+            return;
+        }
+          
+        const mobileRegex = /^[6-9][0-9]{9}$/;
+        if (!mobileRegex.test(editMobile)) {
+            document.getElementById("validation").innerHTML="Please enter a valid 10-digit mobile number*";
+            return;
+        }
+          
+        if (!editAddress1 || !editAddress2) {
+            document.getElementById("validation").innerHTML="Address1 and Address2 are required fields*";
+            return;
+        }
+
+        if (editGender===2) {
+            document.getElementById("validation").innerHTML="Please select Gender*";
+            return;
+        }
+
+        if (editMaritalStatus===4) {
+            document.getElementById("validation").innerHTML="Please select Marital Status*";
+            return;
+        }
+
+        if (!editStateId || !editCityId) {
+            document.getElementById("validation").innerHTML="Please select State and City*";
+            return;
+        }
         const data = {
-            "id": editId,
             "code": editCode,
             "name": editName,
             "email": editEmail,
@@ -214,11 +295,11 @@ const CRUD = ()=> {
             clear();
             handleClose();
             toast.success('Student Updated.', {
-                position: "bottom-right",
-                autoClose: 3000,
+                position: "top-right",
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
+                pauseOnHover: false,
                 draggable: true,
                 progress: undefined,
                 theme: "dark",
@@ -232,7 +313,10 @@ const CRUD = ()=> {
     const [selectedIds, setSelectedIds] = useState([]);
 
     const handleDeleteSelected = () => {
-        if(window.confirm("Are you sure?")===true){
+        if(selectedIds.length==0){
+            window.alert("Select atleast one student record to delete.");
+        }
+        else if(window.confirm("Are you sure?")===true){
             selectedIds.forEach(async (id) => {
             try {
                 await  handleDelete(id);
@@ -242,11 +326,11 @@ const CRUD = ()=> {
             });
             setSelectedIds([]);
             toast.success('Selected Student(s) Deleted.', {
-                position: "bottom-right",
-                autoClose: 3000,
+                position: "top-right",
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
+                pauseOnHover: false,
                 draggable: true,
                 progress: undefined,
                 theme: "dark",
@@ -267,7 +351,10 @@ const CRUD = ()=> {
     }
     
     const handleSelectedDeactive = () => {
-        if(window.confirm("Are you sure?")===true){
+        if(selectedIds.length==0){
+            window.alert("Select atleast one student record to deactivate.");
+        }
+        else if(window.confirm("Are you sure?")===true){
             selectedIds.forEach(async (id) => {
             try {
                 await  handleDeactivate(id);
@@ -277,11 +364,11 @@ const CRUD = ()=> {
             });
             setSelectedIds([]);
             toast.success('Selected Deactivated.', {
-                position: "bottom-right",
-                autoClose: 3000,
+                position: "top-right",
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
+                pauseOnHover: false,
                 draggable: true,
                 progress: undefined,
                 theme: "dark",
@@ -327,40 +414,13 @@ const CRUD = ()=> {
             editSetIsActive(0);
         }
     }
-    
-    const handleGenderChange = (e) => {
-        setGender(parseInt(e.target.value));
-    }
-
-    const handleEditGenderChange = (e) => {
-        editSetGender(parseInt(e.target.value));
-    }
-
-    const handleMaritalStatusChange = (e) => {
-        setMaritalStatus(parseInt(e.target.value));
-    }
 
     const handleEditMaritalStatusChange = (e) => {
         editSetMaritalStatus(parseInt(e.target.value));
     }
 
-    const [states, setStates] = useState([]);
-    const [cities, setCities] = useState([]);
-
-    useEffect(() => {
-        // Fetch states on component mount
-        axios.get('https://localhost:7277/api/State')
-            .then((result) => {
-                setStates(result.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }, []);
-
-     // Function to fetch cities based on selected state
      const handleStateChange = (stateId) => {
-        axios.get(`https://localhost:7277/api/City/${stateId}`)
+        axios.get(`https://localhost:7277/api/City/FromState/${stateId}`)
             .then((result) => {
                 setCities(result.data);
             })
@@ -369,7 +429,6 @@ const CRUD = ()=> {
             });
     };
 
-    // JSX code for state and city dropdowns
     const stateOptions = states.map((state) => (
         <option key={state.sId} value={state.sId}>{state.name}</option>
     ));
@@ -380,7 +439,7 @@ const CRUD = ()=> {
 
     return(
         <Fragment>
-            <h1 style={{padding:"20px"}}>Manage Students</h1>
+            <h1 style={{padding:"20px"}}>Manage Student</h1>
             <button className="btn btn-primary" onClick={handleAdd}>Add</button> &nbsp;
             <button className="btn btn-danger" onClick={handleDeleteSelected}>Delete</button> &nbsp;
             <button className="btn btn-danger" onClick={handleSelectedDeactive}>Deactivate</button> &nbsp;
@@ -393,74 +452,93 @@ const CRUD = ()=> {
                 <Modal.Title>Add</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Name:" 
-                        value={name} onChange={(e)=> setName(e.target.value)} /></Col>
-                    </Row>
-                    <Row>    
-                        <Col><input type="text" className="form-control" placeholder="Enter Email:" 
-                        value={email} onChange={(e)=> setEmail(e.target.value)} /></Col>
-                    </Row>
-                    <Row> 
-                        <Col><input type="text" className="form-control" placeholder="Enter Mobile:" 
-                        value={mobile} onChange={(e)=> setMobile(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Address1:" 
-                        value={address1} onChange={(e)=> setAddress1(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Address2:" 
-                        value={address2} onChange={(e)=> setAddress2(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <input type="radio" name="gender" value="0" checked={gender === 0} onChange={handleGenderChange} /> Male &nbsp;
-                            <input type="radio" name="gender" value="1" checked={gender === 1} onChange={handleGenderChange} /> Female
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>Marital Status:</label><br />
-                            <select className="form-control" value={maritalStatus} onChange={handleMaritalStatusChange}>
-                                <option value="">--Select State--</option>
-                                <option value={0}>Single</option>
-                                <option value={1}>Married</option>
-                                <option value={2}>Separated</option>
-                            </select>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>State</label><br />
-                            <select className="form-control" value={stateId} onChange={(e) => {
-                                setStateId(parseInt(e.target.value));
-                                handleStateChange(parseInt(e.target.value)); // Fetching cities on state change
-                            }}>
-                                <option value="">--Select State--</option>
-                                {stateOptions}
-                            </select>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>City</label><br />
-                            <select className="form-control" value={cityId} onChange={(e) => setCityId(parseInt(e.target.value))}>
-                                <option value="">--Select City--</option>
-                                {cityOptions}
-                            </select>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="checkbox"
-                            checked={isActive === 1 ? true : false}
-                            onChange={(e)=> handleActiveChange(e)} value={isActive}
-                        />
-                            <label>IsActive</label>
-                        </Col>
-                    </Row>
-                    </Modal.Body>
+                <Row>
+                    <Col>
+                        <label>Name:</label>
+                        <input type="text" className="form-control" placeholder="Enter Name:" 
+                        value={name} onChange={(e)=> setName(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>    
+                    <Col>
+                        <label>Email:</label>
+                        <input type="text" className="form-control" placeholder="Enter Email:" 
+                        value={email} onChange={(e)=> setEmail(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row> 
+                    <Col>
+                        <label>Mobile:</label>
+                        <input type="text" className="form-control" placeholder="Enter Mobile:" 
+                        value={mobile} onChange={(e)=> setMobile(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Address 1:</label>
+                        <input type="text" className="form-control" placeholder="Enter Address1:" 
+                        value={address1} onChange={(e)=> setAddress1(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Address 2:</label>
+                        <input type="text" className="form-control" placeholder="Enter Address2:" 
+                        value={address2} onChange={(e)=> setAddress2(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Gender:</label>
+                        <input type="radio" name="gender" value="0" checked={gender === 0} 
+                        onChange={(e) => {setGender(parseInt(e.target.value));}} /> Male &nbsp;
+                        <input type="radio" name="gender" value="1" checked={gender === 1} 
+                        onChange={(e) => {setGender(parseInt(e.target.value));}} /> Female
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Marital Status:</label><br />
+                        <select className="form-control" value={maritalStatus} 
+                        onChange={(e) => {setMaritalStatus(parseInt(e.target.value));}}>
+                            <option value={4}>--Select Marital Status--</option>
+                            <option value={0}>Single</option>
+                            <option value={1}>Married</option>
+                            <option value={2}>Separated</option>
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>State/Union Territory:</label><br />
+                        <select className="form-control" value={stateId} onChange={(e) => {
+                            setStateId(parseInt(e.target.value));
+                            handleStateChange(parseInt(e.target.value));
+                        }}>
+                            <option value="">--Select State--</option>
+                            {stateOptions}
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>City:</label><br />
+                        <select className="form-control" value={cityId} 
+                        onChange={(e) => setCityId(parseInt(e.target.value))}>
+                            <option value="">--Select City--</option>
+                            {cityOptions}
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <input type="checkbox" checked={isActive === 1 ? true : false} onChange={(e)=> handleActiveChange(e)} value={isActive} />
+                        <label>IsActive</label>
+                    </Col>
+                </Row>
+                </Modal.Body>
                 <Modal.Footer>
+                    <div id="validation"></div>
                     <Button variant="secondary" onClick={handleCloseAdd}> Close </Button>
                     <Button className="btn btn-primary" onClick={()=> handleSave()}> Save </Button>
                 </Modal.Footer>
@@ -505,12 +583,12 @@ const CRUD = ()=> {
                                     <td>{item.mobile}</td>
                                     <td>{item.address1}</td>
                                     <td>{item.address2}</td>
-                                    <td>{item.stateId}</td>
-                                    <td>{item.cityId}</td>
+                                    <td>{item.stateName}</td>
+                                    <td>{item.cityName}</td>
                                     <td>{item.gender === 0 ? "Male" : "Female"}</td>
                                     <td>{item.maritalStatus === 0 ? "Single" : (item.maritalStatus === 1 ? "Married" : "Separated")}</td>
                                     <td colSpan={2}>
-                                        <button className="btn btn-primary" onClick={()=>handleEdit(item.id)}>Edit</button> &nbsp;
+                                        <button className="btn btn-primary" onClick={()=>{handleStateChange(item.stateId); handleEdit(item.id);}}>Edit</button> &nbsp;
                                         {/* <button className="btn btn-danger" onClick={()=>handleDelete(item.id)}>Delete</button> */}
                                     </td>
                                 </tr>   
@@ -528,83 +606,100 @@ const CRUD = ()=> {
                 <Modal.Title>Edit</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Id:" 
-                        value={editId} onChange={(e)=> editSetId(e.target.value)} /></Col><br/>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Code:" 
-                        value={editCode} onChange={(e)=> editSetCode(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Name:" 
-                        value={editName} onChange={(e)=> editSetName(e.target.value)} /></Col>
-                    </Row>
-                    <Row>    
-                        <Col><input type="text" className="form-control" placeholder="Enter Email:" 
-                        value={editEmail} onChange={(e)=> editSetEmail(e.target.value)} /></Col>
-                    </Row>
-                    <Row> 
-                        <Col><input type="text" className="form-control" placeholder="Enter Mobile:" 
-                        value={editMobile} onChange={(e)=> editSetMobile(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Address1:" 
-                        value={editAddress1} onChange={(e)=> editSetAddress1(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col><input type="text" className="form-control" placeholder="Enter Address2:" 
-                        value={editAddress2} onChange={(e)=> editSetAddress2(e.target.value)} /></Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <input type="radio" name="editGender" value="0" checked={editGender === 0} onChange={handleEditGenderChange} /> Male &nbsp;
-                            <input type="radio" name="editGender" value="1" checked={editGender === 1} onChange={handleEditGenderChange} /> Female
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>Marital Status:</label><br />
-                            <select className="form-control" value={editMaritalStatus} onChange={handleEditMaritalStatusChange}>
+                <Row>
+                    <Col>
+                        <label>Code:(Not editable*)</label>
+                        <input type="text" className="form-control" placeholder="Enter Code:" 
+                        value={editCode} contentEditable="false"/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Name:</label>
+                        <input type="text" className="form-control" placeholder="Enter Name:" 
+                        value={editName} onChange={(e)=> editSetName(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Email:(Not editable*)</label>
+                        <input type="text" className="form-control" placeholder="Enter Email:" 
+                        value={editEmail}  />
+                    </Col>
+                </Row>
+                <Row>    
+                    <Col>
+                        <label>Mobile:</label>
+                        <input type="text" className="form-control" placeholder="Enter Mobile:" 
+                        value={editMobile} onChange={(e)=> editSetMobile(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Address 1:</label>
+                        <input type="text" className="form-control" placeholder="Enter Address1:" 
+                        value={editAddress1} onChange={(e)=> editSetAddress1(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Address 2:</label>
+                        <input type="text" className="form-control" placeholder="Enter Address2:" 
+                        value={editAddress2} onChange={(e)=> editSetAddress2(e.target.value)} />
+                    </Col>
+                </Row>
+                <Row>                                  
+                    <Col>
+                        <label>Gender:</label>
+                        <input type="radio" name="editGender" value="0" checked={editGender === 0}
+                         onChange={(e) => {editSetGender(parseInt(e.target.value));}} /> Male &nbsp;
+                        <input type="radio" name="editGender" value="1" checked={editGender === 1} 
+                         onChange={(e) => {editSetGender(parseInt(e.target.value));}} /> Female
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>Marital Status:</label><br />
+                        <select className="form-control" value={editMaritalStatus} onChange={handleEditMaritalStatusChange}>
+                            <option value={4}>--Select Marital Status--</option>
+                            <option value={0}>Single</option>
+                            <option value={1}>Married</option>
+                            <option value={2}>Separated</option>
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>State:</label><br />
+                        <select className="form-control" value={editStateId} onChange={(e) => {
+                            editSetStateId(parseInt(e.target.value));
+                            handleStateChange(parseInt(e.target.value)); 
+                        }}>
                             <option value="">--Select State--</option>
-                                <option value={0}>Single</option>
-                                <option value={1}>Married</option>
-                                <option value={2}>Separated</option>
-                            </select>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>State</label><br />
-                            <select className="form-control" value={editStateId} onChange={(e) => {
-                                editSetStateId(parseInt(e.target.value));
-                                handleStateChange(parseInt(e.target.value)); // Fetch cities on state change
-                            }}>
-                                <option value="">--Select State--</option>
-                                {stateOptions}
-                            </select>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>City</label><br />
-                            <select className="form-control" value={editCityId} onChange={(e) => editSetCityId(parseInt(e.target.value))}>
-                                <option value="">--Select City--</option>
-                                {cityOptions}
-                            </select>
-                        </Col>
-                    </Row>
+                            {stateOptions}
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label>City:</label><br />
+                        <select className="form-control" value={editCityId} 
+                         onChange={(e) => editSetCityId(parseInt(e.target.value))}>
+                            <option value="">--Select City--</option>
+                            {cityOptions}
+                        </select>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <input type="checkbox" checked={editIsActive === 1? true : false} onChange={(e)=> handleEditActiveChange(e)} value={editIsActive} />
+                        <label>IsActive</label>
+                    </Col>
+                </Row>
 
-                    <Row>
-                        <Col><input type="checkbox"
-                            checked={editIsActive === 1? true : false}
-                            onChange={(e)=> handleEditActiveChange(e)} value={editIsActive}
-                        />
-                            <label>IsActive</label>
-                        </Col>
-                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
+                    <div id="validation"></div>
                     <Button variant="secondary" onClick={handleClose}> Close </Button>
                     <Button variant="primary" onClick={handleUpdate}>Save Changes</Button>
                 </Modal.Footer>
@@ -613,4 +708,4 @@ const CRUD = ()=> {
     )
 }
 
-export default CRUD;
+export default Home;

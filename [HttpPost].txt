@@ -1,0 +1,25 @@
+  [HttpPost]
+  public async Task<IActionResult> PostStudent(Student student)
+  {
+      string code = $"{DateTime.Now.ToString("yyyyMMdd")}";
+
+      student.State = _studentContext.States.Find(student.StateId);
+      student.City = _studentContext.Cities.Find(student.CityId);
+
+
+      _studentContext.Students.Add(student);
+      await _studentContext.SaveChangesAsync();
+
+      int numberOfDigits = student.Id / 10 + 1;
+      for (int i = 1; i <= 5 - numberOfDigits; i++)
+         code = code + "0";
+
+      student.Code = code + student.Id;
+
+      await _studentContext.SaveChangesAsync();
+
+      return Ok(student);
+  }
+
+
+string code = $"{DateTime.Now.ToString("yyyyMMdd")}{student.Id:D5}";
