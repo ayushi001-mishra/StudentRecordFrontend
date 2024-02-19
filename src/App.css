@@ -32,6 +32,19 @@
   color:red;
 }
 
+#not-editable {
+  background-color: #d1cfcf;
+  color: #555;
+  cursor: not-allowed;
+}
+
+#style-button {
+    margin: 5px;
+    width: 100px;
+    cursor: pointer; 
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

@@ -1,3 +1,4 @@
+backup-working without error as expected:
 import React, {useState, useEffect, Fragment} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, Modal, Row, Col, Table} from 'react-bootstrap';
@@ -63,10 +64,6 @@ const Home = ()=> {
 
     //selected ids for validation
     const [selectedIds, setSelectedIds] = useState([]);
-
-    //to check if edited email/mobile is different from orginial one or not
-    const [emailOfEditStudent, setEmailOfEditStudent]=useState('');
-    const [mobileOfEditStudent, setMobileOfEditStudent]=useState('');
 
     //get current date
     const currentDate = new Date().toISOString();
@@ -211,9 +208,6 @@ const Home = ()=> {
         editSetModifiedOn('');
         editSetId('');
 
-        setEmailOfEditStudent('');
-        setMobileOfEditStudent('');
-
     }
 
     //open add model when add button clicked
@@ -232,6 +226,7 @@ const Home = ()=> {
             editSetAddress1(result.data.address1);
             editSetAddress2(result.data.address2);
             editSetIsActive(result.data.isActive);
+
             editSetGender(result.data.gender);
             editSetMaritalStatus(result.data.maritalStatus);
             editSetStateId(result.data.stateId);
@@ -241,9 +236,6 @@ const Home = ()=> {
             editSetModifiedBy(result.data.modifiedBy);
             editSetModifiedOn(result.data.modifiedOn);
             editSetId(id);
-
-            setEmailOfEditStudent(result.data.email);
-            setMobileOfEditStudent(result.data.mobile);
                 
         })
         .catch((error)=>{
@@ -277,14 +269,14 @@ const Home = ()=> {
         }
 
         const emailExists=checkEmail(editEmail);
-        if (emailOfEditStudent!=editEmail && emailExists) {
+        if (emailExists) {
             document.getElementById("validation").innerHTML = "Email already exists."
             return;
         }
 
         const mobileExists=checkEmail(editMobile);
-        if (mobileOfEditStudent!=editMobile && mobileExists) {
-            document.getElementById("validation").innerHTML = "Mobile already exists."
+        if (mobileExists) {
+            document.getElementById("validation").innerHTML = "Email already exists."
             return;
         }
 
