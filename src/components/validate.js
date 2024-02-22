@@ -19,7 +19,6 @@ export const validateData = (data) => {
     if (!nameRegex.test(name)) {
         return "Please enter name*";
     }
-
     const emailRegex = /^[a-zA-Z0-9_]+[@][a-z]+[.][a-z]{2,3}$/;
     if (!emailRegex.test(email)) {
         return "Please enter a valid email*";
