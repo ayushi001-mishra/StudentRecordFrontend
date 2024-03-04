@@ -15,7 +15,7 @@ export const validateData = (data) => {
         mobileExists
     } = data;
 
-    const nameRegex=/^[A-Z][a-zA-z]*$/;
+    const nameRegex=/^[A-Z][a-zA-z\s]*$/;
     if (!nameRegex.test(name)) {
         return "Please enter name*";
     }

@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
-import './Navbar.css'; 
-import logo from './alletec.jpg'; 
+import logo from './logo.webp'; 
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
+    <div>
     <nav className="navbar">
-      <img src={logo} alt="Logo" className="navbar-logo" /> {/* Logo */}
+      <div className="navbar-container">
       <ul>
-        <li><a class="active" href="http://localhost:3000/">Student</a></li>
-        <li><a href="#news">News</a></li>
+        <li><img src={logo} alt="Logo" className="navbar-logo" /></li>
+        <li><a href="http://localhost:3000/">Student</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#about">About</a></li>
       </ul>
+      </div>
     </nav>
+    </div>
   );
 };
 

@@ -6,18 +6,30 @@ import {validateData} from './Validate';
 import {baseURL, baseURLStudent} from '../configurations';
 import CustomModal from './Modal';
 import Navbar from './Navbar';
+import Footer from './Footer';
+import ConfirmationPopup from './Confirmation';
+
+import Tooltip from '@mui/material/Tooltip';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
+import EditIcon from '@mui/icons-material/Edit';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Home = ()=> {
-
-    //for edit model
-    const [edit, setEdit] = useState(false);
-    const handleCloseEdit = () =>setEdit(false);
-    const handleShowEdit = () => setEdit(true);
 
     //for add model
     const [add, setAdd] = useState(false);
     const handleCloseAdd = () => setAdd(false);
     const handleShowAdd = () => setAdd(true);
+
+    //for edit model
+    const [edit, setEdit] = useState(false);
+    const handleCloseEdit = () =>setEdit(false);
+    const handleShowEdit = () => setEdit(true);
 
     //add fields
     const [code, setCode] = useState('');
@@ -61,6 +73,13 @@ const Home = ()=> {
 
     //for student record
     const [data, setData] = useState([]);
+    const [sortAttribute, setSortAttribute] = useState('id');
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
+    const [searchName, setSearchName] = useState('');
+
 
     //selected ids for validation
     const [selectedIds, setSelectedIds] = useState([]);
@@ -68,6 +87,12 @@ const Home = ()=> {
     //to check if edited email/mobile is different from orginial one or not
     const [emailOfEditStudent, setEmailOfEditStudent]=useState('');
     const [mobileOfEditStudent, setMobileOfEditStudent]=useState('');
+
+    //delete confirmation pop-up
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+     //deactivate confirmation pop-up
+     const [showDeactivateConfirmation, setShowDeactivateConfirmation] = useState(false);
 
     //get current date
     const currentDate = new Date().toISOString();
@@ -82,17 +107,61 @@ const Home = ()=> {
         .catch((error) => {
             console.log(error);
         });
-    }, []);
+    }, [pageNumber, pageSize, sortAttribute, sortOrder]);
 
-    const getData = () =>{
-        axios.get(baseURLStudent)
-        .then((result)=>{
-            const activeStudents = result.data.filter(student => student.isActive === 1);
-            setData(activeStudents);
-        })
-        .catch((error)=>{
-            console.log(error);
-        })
+    const getData = () => {
+        const paginationParams = {
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            sortAttribute: sortAttribute,
+            sortOrder: sortOrder,
+            searchName: searchName
+        };
+    
+        axios.post(baseURLStudent + '/PaginatedSort', paginationParams)
+            .then((result) => {
+                setData(result.data.data);
+                setTotalPages(result.data.totalPages);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const handleSort = (attribute) => {
+        if (sortAttribute === attribute) {
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortAttribute(attribute);
+            setSortOrder('asc');
+        }
+    };
+
+    const startIndex = (pageNumber - 1) * pageSize + 1;
+
+    const handlePreviousPage = () => {
+        if (pageNumber > 1) {
+            setPageNumber(pageNumber - 1);
+        }
+    }
+
+    const handleNextPage = () => {
+        if (pageNumber < totalPages) {
+            setPageNumber(pageNumber + 1);
+        }
+    }
+
+    const handlePageSizeChange = (event) => {
+        const newSize = parseInt(event.target.value);
+        setPageSize(newSize);
+    }
+
+    const renderPageSizeOptions = () => {
+        const options = [];
+        for (let size = 5; size <= 100; size += 5) {
+            options.push(<option key={size} value={size}>{size} per page</option>);
+        }
+        return options;
     }
 
     const checkEmail = async (emailPara) => {
@@ -114,7 +183,7 @@ const Home = ()=> {
       };
 
       const isNameValid=(name)=>{
-        const nameRegex=/^[A-Z][a-zA-z]*$/;
+        const nameRegex=/^[A-Z][a-zA-z\s]*$/;
         if (!nameRegex.test(name)) {
             document.getElementById("nameV").innerHTML ="Enter name*";
         }
@@ -185,6 +254,7 @@ const Home = ()=> {
             getData();
             clear();
             handleCloseAdd();
+            setCities([]);
             //toast emitter
             toast.success('Student added.', {
                 position: "top-right",
@@ -320,6 +390,7 @@ const Home = ()=> {
             getData();
             clear();
             handleCloseEdit();
+            setCities([]);
             toast.success('Student Updated.', {
                 position: "top-right",
                 autoClose: 2000,
@@ -334,13 +405,19 @@ const Home = ()=> {
             console.error('Error occurred while updating:', error);
             toast.error(error.message || 'An error occurred while updating.');
         }
-};
+    };
+
+    //Deletion Process
+    const handleConfirmDelete = () => {
+        setShowDeleteConfirmation(true);
+    };
+
+    const handleConfirmDeleteCancel = () => {
+        setShowDeleteConfirmation(false);
+    };
 
     const handleDeleteSelected = () => {
-        if(selectedIds.length==0){
-            window.alert("Select atleast one student record to delete.");
-        }
-        else if(window.confirm("Are you sure?")===true){
+         if(showDeleteConfirmation===true){
             selectedIds.forEach(async (id) => {
             try {
                 await  handleDelete(id);
@@ -359,6 +436,9 @@ const Home = ()=> {
                 progress: undefined,
                 theme: "dark",
                 });
+            
+            console.log("Item deleted");
+            setShowDeleteConfirmation(false);
         }
     };
 
@@ -374,11 +454,17 @@ const Home = ()=> {
         })
     }
     
+    //Deactivation process
+    const handleConfirmDeactivate = () => {
+        setShowDeactivateConfirmation(true);
+    };
+
+    const handleConfirmDeactivateCancel = () => {
+        setShowDeactivateConfirmation(false);
+    };
+
     const handleSelectedDeactive = () => {
-        if(selectedIds.length==0){
-            window.alert("Select atleast one student record to deactivate.");
-        }
-        else if(window.confirm("Are you sure?")===true){
+         if(showDeactivateConfirmation===true){
             selectedIds.forEach(async (id) => {
             try {
                 await  handleDeactivate(id);
@@ -397,6 +483,8 @@ const Home = ()=> {
                 progress: undefined,
                 theme: "dark",
                 });
+            console.log("Item deactivated");
+            setShowDeactivateConfirmation(false);
         }
     };
 
@@ -461,16 +549,78 @@ const Home = ()=> {
         <option key={city.cId} value={city.cId}>{city.name}</option>
     ));
 
-    return(
-        <Fragment>
-            <Navbar/>
+    const sortBy=(attribute)=>{
+        const paginationSortParams = {
+            pageNumber: 1,
+            pageSize: pageSize,
+            sortAttribute: sortAttribute
+        };
+    
+        axios.post(baseURLStudent + '/PaginatedSort', paginationSortParams)
+            .then((result) => {
+                setData(result.data.data);
+                setTotalPages(result.data.totalPages);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
-            <button style={{float:"left"}} className="styled-button" onClick={handleAdd}>Add</button> &nbsp;
-            <button style={{float:"left"}} className="styled-button-delete" onClick={handleDeleteSelected}>Delete</button> &nbsp;
-            <button style={{float:"left"}} className="styled-button-delete" onClick={handleSelectedDeactive}>Deactivate</button> &nbsp;
+    const handleSearch = () => {
+        setPageNumber(1); 
+        getData();
+     };
+
+    return(
+        <div>
+            <Navbar/>
+            <div className="heading">Student Record</div>
+            <br/><br/>
+            <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
+            <Tooltip title="Add" placement="top" arrow="true">
+                <button style={{float:"left"}} className="styled-icon" onClick={handleAdd}><AddIcon/></button>
+            </Tooltip>
+            <Tooltip title="Delete" placement="top" arrow="true">
+                <button style={{float:"left"}} className="styled-icon" onClick={handleConfirmDelete} disabled={selectedIds.length === 0}><DeleteIcon/></button>
+            </Tooltip>
+            <Tooltip title="Deactivate" placement="top" arrow="true">
+                <button style={{float:"left"}} className="styled-icon" onClick={handleConfirmDeactivate} disabled={selectedIds.length === 0}><ClearIcon/></button>
+            </Tooltip>
+
+            <input
+                type="text"
+                placeholder="Search by Name"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+            />
+            <Tooltip title="Search" arrow="true">
+                <button style={{border:"none"}} onClick={handleSearch}><SearchIcon sx={{ fontSize: 20 }}/></button>
+            </Tooltip>
+            </div>
+
+            {showDeleteConfirmation && (
+                <ConfirmationPopup
+                message="Are you sure you want to delete the record(s)?"
+                onConfirm={handleDeleteSelected}
+                onCancel={handleConfirmDeleteCancel}
+                />
+            )}
+            
+            {showDeactivateConfirmation && (
+                <ConfirmationPopup
+                message="Are you sure you want to deactivate the record(s)?"
+                onConfirm={handleSelectedDeactive}
+                onCancel={handleConfirmDeactivateCancel}
+                />
+            )}
 
             <ToastContainer/>
-
+            <br/><br/>
+            <div style={{margin:"5px"}}>
+                <select value={pageSize} onChange={handlePageSizeChange}>
+                    {renderPageSizeOptions()}
+                </select>
+            </div>
             {/*model*/}
             {add? 
             <CustomModal
@@ -507,6 +657,7 @@ const Home = ()=> {
                 isEmailValid={isEmailValid}
                 isNameValid={isNameValid}
                 isMobileValid={isMobileValid}
+                clear={clear}
             />
             :
                 (edit?
@@ -544,26 +695,27 @@ const Home = ()=> {
                     isEmailValid={isEmailValid}
                     isNameValid={isNameValid}
                     isMobileValid={isMobileValid}
+                    clear={clear}
                 />
                 :
                 <div></div>
                 )
             }
-            <table >
+            <table class="home" >
                 <thead>
                     <tr>
-                    <th>#</th>
+                    <th style={{width:"10px", textAlign:"center"}}>#</th>
                     <th>Select</th>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th>Address1</th>
-                    <th>Address2</th>
-                    <th>State</th>
-                    <th>City</th>
-                    <th>Gender</th>
-                    <th>Marital Status</th>
+                    <th onClick={() => handleSort('code')}>Code</th>
+                    <th onClick={() => handleSort('name')}>Name</th>
+                    <th onClick={() => handleSort('email')}>Email</th>
+                    <th onClick={() => handleSort('mobile')}>Mobile</th>
+                    <th onClick={() => handleSort('address1')}>Address1</th>
+                    <th onClick={() => handleSort('address2')}>Address2</th>
+                    <th onClick={() => handleSort('statename')}>State</th>
+                    <th onClick={() => handleSort('cityname')}>City</th>
+                    <th onClick={() => handleSort('gender')}>Gender</th>
+                    <th onClick={() => handleSort('maritalStatus')}>Marital Status</th>
                     <th>Actions</th>
                     </tr>
                 </thead>
@@ -573,7 +725,7 @@ const Home = ()=> {
                         data.map((item, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{index+1}</td>
+                                    <td style={{width:"10px", textAlign:"center"}}>{startIndex+index}</td>
                                     <td>
                                     <input
                                         type="checkbox"
@@ -591,10 +743,12 @@ const Home = ()=> {
                                     <td>{item.cityName}</td>
                                     <td>{item.gender === 0 ? "Male" : "Female"}</td>
                                     <td>{item.maritalStatus === 0 ? "Single" : (item.maritalStatus === 1 ? "Married" : "Separated")}</td>
-                                    <td colSpan={2}>
-                                        <button className="styled-button" onClick={()=>{handleStateChange(item.stateId); handleEdit(item.id);}}>Edit</button> &nbsp;
+                                    <td>
+                                        <Tooltip title="Edit" arrow="true">
+                                            <button className="styled-icon" id="editButtonId" onClick={()=>{handleStateChange(item.stateId); handleEdit(item.id);}}><EditIcon/></button> &nbsp;
+                                        </Tooltip>
                                     </td>
-                                </tr>   
+                                </tr> 
                             )
                         })
                         :
@@ -602,7 +756,19 @@ const Home = ()=> {
                 }
                 </tbody>
             </table>
-        </Fragment>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Tooltip title="Previous"  arrow="true">
+                        <button className="styled-icon-paging" onClick={handlePreviousPage} disabled={pageNumber === 1}><ArrowBackIosNewSharpIcon/></button>
+                    </Tooltip>
+                    <span className="paging-span">Page {pageNumber} of {totalPages}</span>
+                    <Tooltip title="Next" arrow="true">
+                        <button className="styled-icon-paging" onClick={handleNextPage} disabled={pageNumber === totalPages || totalPages===0 }><ArrowForwardIosSharpIcon/></button>
+                    </Tooltip>
+                </div>
+            </div>
+    <Footer data={data} />
+    </div>
     )
 }
 
