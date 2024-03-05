@@ -18,6 +18,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
 import SearchIcon from '@mui/icons-material/Search';
+import SwapVertRoundedIcon from '@mui/icons-material/SwapVertRounded';
+import NorthRoundedIcon from '@mui/icons-material/NorthRounded';
+import SouthIcon from '@mui/icons-material/South';
 
 const Home = ()=> {
 
@@ -130,7 +133,7 @@ const Home = ()=> {
 
     const handleSort = (attribute) => {
         if (sortAttribute === attribute) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+            setSortOrder(sortOrder===''? 'asc' ? (sortOrder === 'asc' ? 'desc' : 'asc'));
         } else {
             setSortAttribute(attribute);
             setSortOrder('asc');
@@ -706,16 +709,46 @@ const Home = ()=> {
                     <tr>
                     <th style={{width:"10px", textAlign:"center"}}>#</th>
                     <th>Select</th>
-                    <th onClick={() => handleSort('code')}>Code</th>
-                    <th onClick={() => handleSort('name')}>Name</th>
-                    <th onClick={() => handleSort('email')}>Email</th>
-                    <th onClick={() => handleSort('mobile')}>Mobile</th>
-                    <th onClick={() => handleSort('address1')}>Address1</th>
-                    <th onClick={() => handleSort('address2')}>Address2</th>
-                    <th onClick={() => handleSort('statename')}>State</th>
-                    <th onClick={() => handleSort('cityname')}>City</th>
-                    <th onClick={() => handleSort('gender')}>Gender</th>
-                    <th onClick={() => handleSort('maritalStatus')}>Marital Status</th>
+                    <th 
+                    {sortAttribute!=='code'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('code')}>Code</th>
+
+                    <th 
+                    {sortAttribute!=='name'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('name')}>Name</th>
+
+                    <th
+                    {sortAttribute!=='email'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                     onClick={() => handleSort('email')}>Email</th>
+
+                    <th 
+                    {sortAttribute!=='mobile'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('mobile')}>Mobile</th>
+
+                    <th 
+                    {sortAttribute!=='address1'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('address1')}>Address1</th>
+
+                    <th 
+                    {sortAttribute!=='address2'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('address2')}>Address2</th>
+
+                    <th 
+                    {sortAttribute!=='statename'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('statename')}>State</th>
+
+                    <th 
+                    {sortAttribute!=='cityname'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('cityname')}>City</th>
+
+                    <th 
+                    {sortAttribute!=='gender'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('gender')}>Gender</th>
+
+                    <th 
+                    {sortAttribute!=='martialStatus'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
+                    onClick={() => handleSort('maritalStatus')}>Marital Status</th>
+                    
                     <th>Actions</th>
                     </tr>
                 </thead>
