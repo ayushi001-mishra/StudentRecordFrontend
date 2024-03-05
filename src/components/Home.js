@@ -133,7 +133,7 @@ const Home = ()=> {
 
     const handleSort = (attribute) => {
         if (sortAttribute === attribute) {
-            setSortOrder(sortOrder===''? 'asc' ? (sortOrder === 'asc' ? 'desc' : 'asc'));
+            setSortOrder(sortOrder===''? 'asc' : (sortOrder === 'asc' ? 'desc' : 'asc'));
         } else {
             setSortAttribute(attribute);
             setSortOrder('asc');
@@ -577,17 +577,17 @@ const Home = ()=> {
     return(
         <div>
             <Navbar/>
+            <div className="content">
             <div className="heading">Student Record</div>
-            <br/><br/>
             <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
             <Tooltip title="Add" placement="top" arrow="true">
-                <button style={{float:"left"}} className="styled-icon" onClick={handleAdd}><AddIcon/></button>
+                <button className="styled-icon" onClick={handleAdd}><AddIcon/></button>
             </Tooltip>
             <Tooltip title="Delete" placement="top" arrow="true">
-                <button style={{float:"left"}} className="styled-icon" onClick={handleConfirmDelete} disabled={selectedIds.length === 0}><DeleteIcon/></button>
+                <button className="styled-icon" onClick={handleConfirmDelete} disabled={selectedIds.length === 0}><DeleteIcon/></button>
             </Tooltip>
             <Tooltip title="Deactivate" placement="top" arrow="true">
-                <button style={{float:"left"}} className="styled-icon" onClick={handleConfirmDeactivate} disabled={selectedIds.length === 0}><ClearIcon/></button>
+                <button className="styled-icon" onClick={handleConfirmDeactivate} disabled={selectedIds.length === 0}><ClearIcon/></button>
             </Tooltip>
 
             <input
@@ -599,6 +599,7 @@ const Home = ()=> {
             <Tooltip title="Search" arrow="true">
                 <button style={{border:"none"}} onClick={handleSearch}><SearchIcon sx={{ fontSize: 20 }}/></button>
             </Tooltip>
+
             </div>
 
             {showDeleteConfirmation && (
@@ -618,12 +619,7 @@ const Home = ()=> {
             )}
 
             <ToastContainer/>
-            <br/><br/>
-            <div style={{margin:"5px"}}>
-                <select value={pageSize} onChange={handlePageSizeChange}>
-                    {renderPageSizeOptions()}
-                </select>
-            </div>
+            
             {/*model*/}
             {add? 
             <CustomModal
@@ -707,49 +703,59 @@ const Home = ()=> {
             <table class="home" >
                 <thead>
                     <tr>
-                    <th style={{width:"10px", textAlign:"center"}}>#</th>
-                    <th>Select</th>
-                    <th 
-                    {sortAttribute!=='code'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('code')}>Code</th>
-
-                    <th 
-                    {sortAttribute!=='name'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('name')}>Name</th>
-
-                    <th
-                    {sortAttribute!=='email'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                     onClick={() => handleSort('email')}>Email</th>
-
-                    <th 
-                    {sortAttribute!=='mobile'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('mobile')}>Mobile</th>
-
-                    <th 
-                    {sortAttribute!=='address1'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('address1')}>Address1</th>
-
-                    <th 
-                    {sortAttribute!=='address2'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('address2')}>Address2</th>
-
-                    <th 
-                    {sortAttribute!=='statename'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('statename')}>State</th>
-
-                    <th 
-                    {sortAttribute!=='cityname'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('cityname')}>City</th>
-
-                    <th 
-                    {sortAttribute!=='gender'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('gender')}>Gender</th>
-
-                    <th 
-                    {sortAttribute!=='martialStatus'? <SwapVertRoundedIcon/> : (sortOrder==='asc'?<NorthRoundedIcon/> : <SouthIcon/>)}
-                    onClick={() => handleSort('maritalStatus')}>Marital Status</th>
-                    
-                    <th>Actions</th>
+                        <th style={{ width: "10px", textAlign: "center" }}>#</th>
+                        <th>Select</th>
+                        <th 
+                            onClick={() => handleSort('code')}>
+                            {sortAttribute !== 'code' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Code
+                        </th>
+                        <th 
+                            onClick={() => handleSort('name')}>
+                            {sortAttribute !== 'name' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Name
+                        </th>
+                        <th
+                            onClick={() => handleSort('email')}>
+                            {sortAttribute !== 'email' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Email
+                        </th>
+                        <th 
+                            onClick={() => handleSort('mobile')}>
+                            {sortAttribute !== 'mobile' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Mobile
+                        </th>
+                        <th 
+                            onClick={() => handleSort('address1')}>
+                            {sortAttribute !== 'address1' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Address1
+                        </th>
+                        <th 
+                            onClick={() => handleSort('address2')}>
+                            {sortAttribute !== 'address2' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Address2
+                        </th>
+                        <th 
+                            onClick={() => handleSort('statename')}>
+                            {sortAttribute !== 'statename' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            State
+                        </th>
+                        <th 
+                            onClick={() => handleSort('cityname')}>
+                            {sortAttribute !== 'cityname' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            City
+                        </th>
+                        <th 
+                            onClick={() => handleSort('gender')}>
+                            {sortAttribute !== 'gender' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Gender
+                        </th>
+                        <th 
+                            onClick={() => handleSort('maritalStatus')}>
+                            {sortAttribute !== 'maritalStatus' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
+                            Marital Status
+                        </th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -789,8 +795,8 @@ const Home = ()=> {
                 }
                 </tbody>
             </table>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div >
+                <div style={{ display: 'inline-block'}}>
                     <Tooltip title="Previous"  arrow="true">
                         <button className="styled-icon-paging" onClick={handlePreviousPage} disabled={pageNumber === 1}><ArrowBackIosNewSharpIcon/></button>
                     </Tooltip>
@@ -799,8 +805,14 @@ const Home = ()=> {
                         <button className="styled-icon-paging" onClick={handleNextPage} disabled={pageNumber === totalPages || totalPages===0 }><ArrowForwardIosSharpIcon/></button>
                     </Tooltip>
                 </div>
+                <div style={{margin:"5px"}}>
+                <select value={pageSize} onChange={handlePageSizeChange}>
+                    {renderPageSizeOptions()}
+                </select>
             </div>
-    <Footer data={data} />
+            </div>
+            </div>
+    <Footer/>
     </div>
     )
 }
