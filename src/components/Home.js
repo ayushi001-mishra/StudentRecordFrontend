@@ -1,16 +1,15 @@
-import React, {useState, useEffect, Fragment} from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {validateData} from './Validate';
 import {baseURL, baseURLStudent} from '../configurations';
 import CustomModal from './Modal';
-import Navbar from './Navbar';
-import Footer from './Footer';
 import ConfirmationPopup from './Confirmation';
-
+import ExportToExcel from './ExportToExcel';
+ 
+ 
 import Tooltip from '@mui/material/Tooltip';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -21,19 +20,19 @@ import SearchIcon from '@mui/icons-material/Search';
 import SwapVertRoundedIcon from '@mui/icons-material/SwapVertRounded';
 import NorthRoundedIcon from '@mui/icons-material/NorthRounded';
 import SouthIcon from '@mui/icons-material/South';
-
-const Home = ()=> {
-
+ 
+const Home = ({ userName, userRole, setIsLoggedIn, setManageUser,setManageRole })=> {
+ 
     //for add model
     const [add, setAdd] = useState(false);
     const handleCloseAdd = () => setAdd(false);
     const handleShowAdd = () => setAdd(true);
-
+ 
     //for edit model
     const [edit, setEdit] = useState(false);
     const handleCloseEdit = () =>setEdit(false);
     const handleShowEdit = () => setEdit(true);
-
+ 
     //add fields
     const [code, setCode] = useState('');
     const [name, setName] = useState('');
@@ -43,15 +42,15 @@ const Home = ()=> {
     const [address2, setAddress2] = useState('');
     const [stateId, setStateId] = useState(0);
     const [cityId, setCityId] = useState(0);
-    const [gender, setGender] = useState(2); 
-    const [maritalStatus, setMaritalStatus] = useState(4); 
+    const [gender, setGender] = useState(2);
+    const [maritalStatus, setMaritalStatus] = useState(4);
     const [isActive, setIsActive] = useState(0);
     const [createdBy, setCreatedBy] = useState(0);
     const [createdOn, setCreatedOn] = useState('');
     const [modifiedBy, setModifiedBy] = useState(0);
     const [modifiedOn, setModifiedOn] = useState('');
-
-
+ 
+ 
     //edited fields
     const [editId, editSetId] = useState('');
     const [editCode, editSetCode] = useState('');
@@ -62,18 +61,18 @@ const Home = ()=> {
     const [editAddress2, editSetAddress2] = useState('');
     const [editStateId, editSetStateId] = useState(0);
     const [editCityId, editSetCityId] = useState(0);
-    const [editGender, editSetGender] = useState(2); 
-    const [editMaritalStatus, editSetMaritalStatus] = useState(4); 
+    const [editGender, editSetGender] = useState(2);
+    const [editMaritalStatus, editSetMaritalStatus] = useState(4);
     const [editIsActive, editSetIsActive] = useState(0);
     const [editCreatedBy, editSetCreatedBy] = useState(0);
     const [editCreatedOn, editSetCreatedOn] = useState('');
     const [editModifiedBy, editSetModifiedBy] = useState(0);
     const [editModifiedOn, editSetModifiedOn] = useState('');
-    
-    //for state and city dropdown display 
+   
+    //for state and city dropdown display
     const [states, setStates] = useState([]);
-    const [cities, setCities] = useState([]); 
-
+    const [cities, setCities] = useState([]);
+ 
     //for student record
     const [data, setData] = useState([]);
     const [sortAttribute, setSortAttribute] = useState('id');
@@ -82,27 +81,26 @@ const Home = ()=> {
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
     const [searchName, setSearchName] = useState('');
-
-
+ 
     //selected ids for validation
     const [selectedIds, setSelectedIds] = useState([]);
-
+ 
     //to check if edited email/mobile is different from orginial one or not
     const [emailOfEditStudent, setEmailOfEditStudent]=useState('');
     const [mobileOfEditStudent, setMobileOfEditStudent]=useState('');
-
+ 
     //delete confirmation pop-up
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-
+ 
      //deactivate confirmation pop-up
      const [showDeactivateConfirmation, setShowDeactivateConfirmation] = useState(false);
-
+ 
     //get current date
     const currentDate = new Date().toISOString();
-
+ 
     useEffect(()=>{
         getData();
-
+ 
         axios.get(baseURL+'/State')
         .then((result) => {
             setStates(result.data);
@@ -111,7 +109,7 @@ const Home = ()=> {
             console.log(error);
         });
     }, [pageNumber, pageSize, sortAttribute, sortOrder]);
-
+ 
     const getData = () => {
         const paginationParams = {
             pageNumber: pageNumber,
@@ -120,7 +118,7 @@ const Home = ()=> {
             sortOrder: sortOrder,
             searchName: searchName
         };
-    
+   
         axios.post(baseURLStudent + '/PaginatedSort', paginationParams)
             .then((result) => {
                 setData(result.data.data);
@@ -130,7 +128,7 @@ const Home = ()=> {
                 console.log(error);
             });
     };
-
+ 
     const handleSort = (attribute) => {
         if (sortAttribute === attribute) {
             setSortOrder(sortOrder===''? 'asc' : (sortOrder === 'asc' ? 'desc' : 'asc'));
@@ -139,26 +137,26 @@ const Home = ()=> {
             setSortOrder('asc');
         }
     };
-
+ 
     const startIndex = (pageNumber - 1) * pageSize + 1;
-
+ 
     const handlePreviousPage = () => {
         if (pageNumber > 1) {
             setPageNumber(pageNumber - 1);
         }
     }
-
+ 
     const handleNextPage = () => {
         if (pageNumber < totalPages) {
             setPageNumber(pageNumber + 1);
         }
     }
-
+ 
     const handlePageSizeChange = (event) => {
         const newSize = parseInt(event.target.value);
         setPageSize(newSize);
     }
-
+ 
     const renderPageSizeOptions = () => {
         const options = [];
         for (let size = 5; size <= 100; size += 5) {
@@ -166,7 +164,7 @@ const Home = ()=> {
         }
         return options;
     }
-
+ 
     const checkEmail = async (emailPara) => {
         try {
           const response = await axios.get(baseURLStudent+`/CheckEmail/${emailPara}`);
@@ -175,7 +173,7 @@ const Home = ()=> {
           console.error('Error checking email:', error);
         }
       };
-      
+     
       const checkMobile = async (mobilePara) => {
         try {
           const response = await axios.get(baseURLStudent+`/CheckMobile/${mobilePara}`);
@@ -184,7 +182,7 @@ const Home = ()=> {
           console.error('Error checking mobile number:', error);
         }
       };
-
+ 
       const isNameValid=(name)=>{
         const nameRegex=/^[A-Z][a-zA-z\s]*$/;
         if (!nameRegex.test(name)) {
@@ -194,7 +192,7 @@ const Home = ()=> {
             document.getElementById("nameV").innerHTML ="";
         }
       }
-
+ 
       const isEmailValid=(email)=>{
         const emailRegex=/^[a-zA-Z0-9_]+[@][a-z]+[.][a-z]{2,3}$/;
         if (!emailRegex.test(email)) {
@@ -204,7 +202,7 @@ const Home = ()=> {
             document.getElementById("emailV").innerHTML ="";
         }
       }
-
+ 
       const isMobileValid=(mobile)=>{
         const mobileRegex=/^[6-9][0-9]{9}$/;
         if (!mobileRegex.test(mobile)) {
@@ -214,7 +212,7 @@ const Home = ()=> {
             document.getElementById("mobileV").innerHTML ="";
         }
       }
-
+ 
     const handleSave = async () =>{
         const data = {
             "code": code,
@@ -233,7 +231,7 @@ const Home = ()=> {
             "modifiedBy": modifiedBy,
             "modifiedOn": currentDate
         }
-
+ 
         const validationError = validateData(data);
         if (validationError) {
             document.getElementById("validation").innerHTML = validationError;
@@ -246,13 +244,13 @@ const Home = ()=> {
                 document.getElementById("validation").innerHTML ="Email already exists.";
                 return;
             }
-
+ 
             const mobileExists = await checkMobile(mobile);
             if (mobileExists) {
                 document.getElementById("validation").innerHTML ="Mobile number already exists.";
                 return;
             }
-
+ 
             await axios.post(baseURLStudent, data);
             getData();
             clear();
@@ -275,7 +273,7 @@ const Home = ()=> {
             toast.error(error.message || 'An error occurred while saving.');
         }
     };
-
+ 
     //clear the fields present in model
     const clear = () =>{
         setCode('');
@@ -293,7 +291,7 @@ const Home = ()=> {
         setCreatedOn('');
         setModifiedBy(0);
         setModifiedOn('');
-
+ 
         editSetCode('');
         editSetName('');
         editSetEmail('');
@@ -310,47 +308,47 @@ const Home = ()=> {
         editSetModifiedBy(0);
         editSetModifiedOn('');
         editSetId('');
-
+ 
         setEmailOfEditStudent('');
         setMobileOfEditStudent('');
-
+ 
     }
-
+ 
     //open add model when add button clicked
     const handleAdd = ()=>{
         handleShowAdd();
     }
-
+ 
     const handleEdit = (id) =>{
         handleShowEdit();
         axios.get(baseURLStudent+`/${id}`)
         .then((result)=>{
-            editSetCode(result.data.code);
-            editSetName(result.data.name);
-            editSetEmail(result.data.email);
-            editSetMobile(result.data.mobile);
-            editSetAddress1(result.data.address1);
-            editSetAddress2(result.data.address2);
-            editSetIsActive(result.data.isActive);
-            editSetGender(result.data.gender);
-            editSetMaritalStatus(result.data.maritalStatus);
-            editSetStateId(result.data.stateId);
-            editSetCityId(result.data.cityId);
-            editSetCreatedBy(result.data.createdBy);
-            editSetCreatedOn(result.data.createdOn);
-            editSetModifiedBy(result.data.modifiedBy);
-            editSetModifiedOn(result.data.modifiedOn);
+            editSetCode(result.data[0].code);
+            editSetName(result.data[0].name);
+            editSetEmail(result.data[0].email);
+            editSetMobile(result.data[0].mobile);
+            editSetAddress1(result.data[0].address1);
+            editSetAddress2(result.data[0].address2);
+            editSetIsActive(result.data[0].isActive);
+            editSetGender(result.data[0].gender);
+            editSetMaritalStatus(result.data[0].maritalStatus);
+            editSetStateId(result.data[0].stateId);
+            editSetCityId(result.data[0].cityId);
+            editSetCreatedBy(result.data[0].createdBy);
+            editSetCreatedOn(result.data[0].createdOn);
+            editSetModifiedBy(result.data[0].modifiedBy);
+            editSetModifiedOn(result.data[0].modifiedOn);
             editSetId(id);
-
-            setEmailOfEditStudent(result.data.email);
-            setMobileOfEditStudent(result.data.mobile);
-                
+ 
+            setEmailOfEditStudent(result.data[0].email);
+            setMobileOfEditStudent(result.data[0].mobile);
+               
         })
         .catch((error)=>{
             toast.error(error);
         })
     }
-
+ 
     const handleUpdate = async () =>{
         const data = {
             "code": editCode,
@@ -369,26 +367,26 @@ const Home = ()=> {
             "modifiedBy": editModifiedBy,
             "modifiedOn": currentDate
         }
-
+ 
         const validationError = validateData(data);
         if (validationError) {
             document.getElementById("validation").innerHTML = validationError;
             return;
         }
-
+ 
         try {
         const eEmailExists= await checkEmail(editEmail);
-        if (emailOfEditStudent!=editEmail && eEmailExists) {
+        if (emailOfEditStudent!==editEmail && eEmailExists) {
             document.getElementById("validation").innerHTML = "Email already exists."
             return;
         }
-
+ 
         const eMobileExists= await checkMobile(editMobile);
-        if (mobileOfEditStudent!=editMobile && eMobileExists) {
+        if (mobileOfEditStudent!==editMobile && eMobileExists) {
             document.getElementById("validation").innerHTML = "Mobile already exists."
             return;
         }
-
+ 
             await axios.put(baseURLStudent+`/${editId}`, data);
             getData();
             clear();
@@ -409,16 +407,16 @@ const Home = ()=> {
             toast.error(error.message || 'An error occurred while updating.');
         }
     };
-
+ 
     //Deletion Process
     const handleConfirmDelete = () => {
         setShowDeleteConfirmation(true);
     };
-
+ 
     const handleConfirmDeleteCancel = () => {
         setShowDeleteConfirmation(false);
     };
-
+ 
     const handleDeleteSelected = () => {
          if(showDeleteConfirmation===true){
             selectedIds.forEach(async (id) => {
@@ -439,12 +437,12 @@ const Home = ()=> {
                 progress: undefined,
                 theme: "dark",
                 });
-            
+           
             console.log("Item deleted");
             setShowDeleteConfirmation(false);
         }
     };
-
+ 
     const handleDelete = (id) =>{
         axios.delete(baseURLStudent+`/${id}`)
         .then((result)=>{
@@ -456,16 +454,16 @@ const Home = ()=> {
             toast.error(error);
         })
     }
-    
+   
     //Deactivation process
     const handleConfirmDeactivate = () => {
         setShowDeactivateConfirmation(true);
     };
-
+ 
     const handleConfirmDeactivateCancel = () => {
         setShowDeactivateConfirmation(false);
     };
-
+ 
     const handleSelectedDeactive = () => {
          if(showDeactivateConfirmation===true){
             selectedIds.forEach(async (id) => {
@@ -490,7 +488,7 @@ const Home = ()=> {
             setShowDeactivateConfirmation(false);
         }
     };
-
+ 
     const handleDeactivate = (id) =>{
         axios.patch(baseURLStudent+`/${id}`, [{"op": "replace","path": "/isActive","value": 0}])  //patch method takes values op,path,value
         .then((result)=>{
@@ -502,16 +500,16 @@ const Home = ()=> {
             toast.error(error);
         })
     }
-
+ 
     //when a record is selected
     const handleCheckboxChange = (id) => {
         const newSelectedIds = selectedIds.includes(id)
           ? selectedIds.filter((selectedId) => selectedId !== id)
           : [...selectedIds, id];
-    
+   
         setSelectedIds(newSelectedIds);
     };
-
+ 
     const handleActiveChange=(e)=>{
         if(e.target.checked){
             setIsActive(1);
@@ -520,7 +518,7 @@ const Home = ()=> {
             setIsActive(0);
         }
     }
-
+ 
     const handleEditActiveChange=(e)=>{
         if(e.target.checked){
             editSetIsActive(1);
@@ -529,11 +527,7 @@ const Home = ()=> {
             editSetIsActive(0);
         }
     }
-
-    const handleEditMaritalStatusChange = (e) => {
-        editSetMaritalStatus(parseInt(e.target.value));
-    }
-
+ 
      const handleStateChange = (stateId) => {
         axios.get(baseURL+`/City/FromState/${stateId}`)
             .then((result) => {
@@ -543,43 +537,55 @@ const Home = ()=> {
                 console.log(error);
             });
     };
-
-    const stateOptions = states.map((state) => (
-        <option key={state.sId} value={state.sId}>{state.name}</option>
-    ));
-
-    const cityOptions = cities.map((city) => (
-        <option key={city.cId} value={city.cId}>{city.name}</option>
-    ));
-
-    const sortBy=(attribute)=>{
-        const paginationSortParams = {
-            pageNumber: 1,
-            pageSize: pageSize,
-            sortAttribute: sortAttribute
-        };
-    
-        axios.post(baseURLStudent + '/PaginatedSort', paginationSortParams)
-            .then((result) => {
-                setData(result.data.data);
-                setTotalPages(result.data.totalPages);
-            })
-            .catch((error) => {
-                console.log(error);
+ 
+    const handleCheckboxes = (e) => {
+        if (e.target.checked) {
+            const newSelectedIds = [];
+            data.forEach((record) => {
+                newSelectedIds.push(record.id);
             });
+            setSelectedIds(newSelectedIds);
+        } else {
+            setSelectedIds([]);
+        }
     }
-
+ 
+    const stateOptions = states.map((state) => (
+        <option value={state.id}>{state.name}</option>
+    ));
+ 
+    const cityOptions = cities.map((city) => (
+        <option value={city.id}>{city.name}</option>
+    ));
+ 
+    // const sortBy=(attribute)=>{
+    //     const paginationSortParams = {
+    //         pageNumber: 1,
+    //         pageSize: pageSize,
+    //         sortAttribute: sortAttribute
+    //     };
+   
+    //     axios.post(baseURLStudent + '/PaginatedSort', paginationSortParams)
+    //         .then((result) => {
+    //             setData(result.data.data);
+    //             setTotalPages(result.data.totalPages);
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // }
+ 
     const handleSearch = () => {
-        setPageNumber(1); 
+        setPageNumber(1);
         getData();
      };
-
+ 
     return(
         <div>
-            <Navbar/>
             <div className="content">
+            <div className="heading">Welcome {userName}, you have logged-in as {userRole}</div>
             <div className="heading">Student Record</div>
-            <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center'}}>
             <Tooltip title="Add" placement="top" arrow="true">
                 <button className="styled-icon" onClick={handleAdd}><AddIcon/></button>
             </Tooltip>
@@ -589,19 +595,77 @@ const Home = ()=> {
             <Tooltip title="Deactivate" placement="top" arrow="true">
                 <button className="styled-icon" onClick={handleConfirmDeactivate} disabled={selectedIds.length === 0}><ClearIcon/></button>
             </Tooltip>
-
-            <input
-                type="text"
-                placeholder="Search by Name"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-            />
-            <Tooltip title="Search" arrow="true">
-                <button style={{border:"none"}} onClick={handleSearch}><SearchIcon sx={{ fontSize: 20 }}/></button>
-            </Tooltip>
-
+ 
+            <button className="styled-button-UR" onClick={()=>{setManageUser(true)}} >User</button>
+            <button className="styled-button-UR" onClick={()=>{setManageRole(true)}} >Role</button>
+ 
+            <div style={{ display: "flex", alignItems: "center", marginLeft: "40%"}}>
+                <div style={{marginRight:'10px'}}>
+                <ExportToExcel/>
+                </div>
+                <input
+                    type="text"
+                    placeholder="Search by Name"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    style={{
+                        padding: "8px",
+                        borderRadius: "4px",
+                        border: "1px solid #ccc",
+                        marginRight: "5px",
+                        width: "200px"
+                    }}
+                />
+                <Tooltip title="Search" arrow={true}>
+                    <button className="styled-icon-paging" onClick={handleSearch}>
+                        <SearchIcon style={{ fontSize: "20px" }} />
+                    </button>
+                </Tooltip>
+ 
+                <select
+                    style={{
+                        marginLeft: "10px",
+                        height: "30px",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        border: "1px solid #ccc",
+                        margin: "10px"
+                    }}
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                >
+                    {renderPageSizeOptions()}
+                </select>
+ 
+                <div>
+                    <button style={{
+                        padding: "8px",
+                        borderRadius: "4px",
+                        border: "1px solid #ccc",
+                        marginRight: "5px",
+                        width: "100px",
+                        backgroundColor: "white"
+                    }} onClick={()=>setIsLoggedIn(false)}>Logout</button>
+                </div>
             </div>
-
+            {/* <div style={{marginLeft:"60%"}}>
+                <input
+                    type="text"
+                    placeholder="Search by Name"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                />
+                <Tooltip title="Search" arrow="true">
+                    <button style={{border:"none"}} onClick={handleSearch}><SearchIcon sx={{ fontSize: 20 }}/></button>
+                </Tooltip>
+            </div>
+            <div >
+                <select style={{height:'20px'}} value={pageSize} onChange={handlePageSizeChange}>
+                    {renderPageSizeOptions()}
+                </select>
+            </div> */}
+            </div>
+ 
             {showDeleteConfirmation && (
                 <ConfirmationPopup
                 message="Are you sure you want to delete the record(s)?"
@@ -609,7 +673,7 @@ const Home = ()=> {
                 onCancel={handleConfirmDeleteCancel}
                 />
             )}
-            
+           
             {showDeactivateConfirmation && (
                 <ConfirmationPopup
                 message="Are you sure you want to deactivate the record(s)?"
@@ -617,11 +681,11 @@ const Home = ()=> {
                 onCancel={handleConfirmDeactivateCancel}
                 />
             )}
-
+ 
             <ToastContainer/>
-            
+           
             {/*model*/}
-            {add? 
+            {add?
             <CustomModal
                 opAdd={true}
                 show={add}
@@ -704,13 +768,17 @@ const Home = ()=> {
                 <thead>
                     <tr>
                         <th style={{ width: "10px", textAlign: "center" }}>#</th>
-                        <th>Select</th>
-                        <th 
+                        <th><input
+                                type="checkbox"
+                                onChange={(e) => handleCheckboxes(e)}
+                            />
+                        </th>
+                        <th
                             onClick={() => handleSort('code')}>
                             {sortAttribute !== 'code' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             Code
                         </th>
-                        <th 
+                        <th
                             onClick={() => handleSort('name')}>
                             {sortAttribute !== 'name' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             Name
@@ -720,41 +788,29 @@ const Home = ()=> {
                             {sortAttribute !== 'email' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             Email
                         </th>
-                        <th 
-                            onClick={() => handleSort('mobile')}>
-                            {sortAttribute !== 'mobile' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
-                            Mobile
-                        </th>
-                        <th 
+                        <th> Mobile</th>
+                        <th
                             onClick={() => handleSort('address1')}>
                             {sortAttribute !== 'address1' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             Address1
                         </th>
-                        <th 
+                        <th
                             onClick={() => handleSort('address2')}>
                             {sortAttribute !== 'address2' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             Address2
                         </th>
-                        <th 
+                        <th
                             onClick={() => handleSort('statename')}>
                             {sortAttribute !== 'statename' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             State
                         </th>
-                        <th 
+                        <th
                             onClick={() => handleSort('cityname')}>
                             {sortAttribute !== 'cityname' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
                             City
                         </th>
-                        <th 
-                            onClick={() => handleSort('gender')}>
-                            {sortAttribute !== 'gender' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
-                            Gender
-                        </th>
-                        <th 
-                            onClick={() => handleSort('maritalStatus')}>
-                            {sortAttribute !== 'maritalStatus' ? <SwapVertRoundedIcon/> : (sortOrder === 'asc' ? <NorthRoundedIcon/> : <SouthIcon/>)}
-                            Marital Status
-                        </th>
+                        <th> Gender </th>
+                        <th> Marital Status </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -787,7 +843,7 @@ const Home = ()=> {
                                             <button className="styled-icon" id="editButtonId" onClick={()=>{handleStateChange(item.stateId); handleEdit(item.id);}}><EditIcon/></button> &nbsp;
                                         </Tooltip>
                                     </td>
-                                </tr> 
+                                </tr>
                             )
                         })
                         :
@@ -795,26 +851,19 @@ const Home = ()=> {
                 }
                 </tbody>
             </table>
-            <div >
-                <div style={{ display: 'inline-block'}}>
-                    <Tooltip title="Previous"  arrow="true">
-                        <button className="styled-icon-paging" onClick={handlePreviousPage} disabled={pageNumber === 1}><ArrowBackIosNewSharpIcon/></button>
-                    </Tooltip>
-                    <span className="paging-span">Page {pageNumber} of {totalPages}</span>
-                    <Tooltip title="Next" arrow="true">
-                        <button className="styled-icon-paging" onClick={handleNextPage} disabled={pageNumber === totalPages || totalPages===0 }><ArrowForwardIosSharpIcon/></button>
-                    </Tooltip>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Tooltip title="Previous"  arrow="true">
+                    <button className="styled-icon-paging" onClick={handlePreviousPage} disabled={pageNumber === 1}><ArrowBackIosNewSharpIcon/></button>
+                </Tooltip>
+                <span className="paging-span">Page {pageNumber} of {totalPages}</span>
+                <Tooltip title="Next" arrow="true">
+                    <button className="styled-icon-paging" onClick={handleNextPage} disabled={pageNumber === totalPages || totalPages===0 }><ArrowForwardIosSharpIcon/></button>
+                </Tooltip>
                 </div>
-                <div style={{margin:"5px"}}>
-                <select value={pageSize} onChange={handlePageSizeChange}>
-                    {renderPageSizeOptions()}
-                </select>
             </div>
-            </div>
-            </div>
-    <Footer/>
     </div>
     )
 }
-
+ 
 export default Home;
+ 

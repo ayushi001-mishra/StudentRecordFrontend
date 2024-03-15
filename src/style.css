@@ -2,64 +2,68 @@
   font-family: 'Nunito Regular';
   src: url('Nunito/static/Nunito-Regular.ttf') format('truetype');
 }
-
+ 
 @font-face {
   font-family: 'Roboto Bold';
   src: url('Roboto/Roboto-Bold.ttf') format('truetype');
 }
-
+ 
 body {
   margin: 0;
   padding: 0;
   font-family: "Nunito Regular", sans-serif;
   background-color: #d5d4d5b0;
 }
-
+ 
 .content {
-  margin-top: 120px; 
-  margin-bottom: 50px; 
-  padding-bottom: 40px; 
+  margin-top: 120px;
+  margin-bottom: 50px;
+  padding-bottom: 40px;
 }
-
+ 
 .heading{
   font-size: 26px;
   font-weight: 700;
   margin-left: 10px;
 }
-
+ 
 #validation{
   color:red;
 }
-  
+ 
 #not-editable {
   background-color: #d1cfcf;
   color: #555;
   cursor: not-allowed;
 }
-
+ 
+.userHome{
+  margin-top: 10%;
+}
+ 
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 90%;
 }
-
+ 
 .home thead, th {
   background-color: #333;
   color: #fff;
   padding: 10px;
   text-align: left;
 }
-
+ 
 .home td {
   padding: 5px 5px 5px 10px;
   text-align: left;
   /* border-bottom: 1px solid #ddd; */
 }
-
+ 
 .home tbody tr{
   background-color: rgb(212, 212, 212);
 }
-
+ 
 input[type="checkbox"] {
   transform: scale(1.5);
 }
@@ -68,16 +72,16 @@ input[type="checkbox"] {
   background-color: #d4d4d4;
   transition: background-color 0.5s ease;
 }
-  
+ 
 .home tbody tr:nth-child(even) {
   background-color: #c8c7c7;
 }
-
+ 
 .home tbody tr:nth-child(even):hover {
   background-color: #d4d4d4;
   transition: background-color 0.5s ease;
 }
-
+ 
 .styled-button {
   background-color: #333;
   border: none;
@@ -92,144 +96,146 @@ input[type="checkbox"] {
   width: 100px;
   height: 30px;
 }
-  
+ 
 .styled-button:hover {
   background-color: #555;
 }
-
+ 
 .styled-icon{
   margin: 5px 5px 0px 0px;
   border: none;
   background-color:transparent;
 }
-
+ 
 .styled-icon-paging{
   border: none;
   background-color:transparent;
   cursor: pointer;
 }
-
+ 
 .paging-span{
   font-size:15px;
   font-weight: 600;
 }
-
+ 
 #nameV{color:red;}
 #emailV{color:red;}
 #mobileV{color:red;}
-
-
+ 
+ 
 /* Style for modal */
 .modal {
     position: fixed;
-    top: 0;
+    top:0;
+    /* top: 9vh; */
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.5); */
     display: none;
-    overflow: scroll;
     border-radius: 8px;
     border: none;
+    margin-top: 6%;
+    margin-left: 26%;
+    overflow-y: scroll;
 }
-
+ 
 .modal.show {
     display: block;
 }
-
+ 
 .modal-dialog {
-    position: relative;
+    position: fixed;
     width: auto;
     max-width: 600px;
-    margin: 20px auto;
 }
-
+ 
 .modal-content {
   position: relative;
   background-color: #fff;
   border: none;
   border-radius: 5px;
 }
-
+ 
 .modal-header{
-  padding: 5px 10px;
+  padding: 5px 5px;
   border-radius: 4px;
   color: white;
   background-color: #333;
 }
-
+ 
 .modal-footer {
   border-radius: 4px;
   color: white;
 }
-
+ 
 .modal-title {
   margin-top: 15px;
 }
-
+ 
 .modal-body {
-  padding: 20px;
+  padding: 15px;
 }
-
+ 
 .modal select{
   width:200px;
 }
-
+ 
 .close {
   position: absolute;
   top: 10px;
   right: 10px;
   cursor: pointer;
 }
-
+ 
 .horizontal{
   padding: 2px;
   margin:10px;
 }
-
+ 
 .vertical{
   width: 50%;
   float: left;
 }
-
+ 
 .form-control {
   width: 100%;
   margin-bottom: 13px;
 }
-
+ 
 label {
   font-weight: bold;
 }
-
+ 
 .custom-table {
   width: 100%;
   border-collapse: collapse;
 }
-
+ 
 .custom-table td {
   padding: 3px;
 }
-
+ 
 .form-control {
   width: calc(100% - 20px);
   padding: 5px;
 }
-
+ 
 .modal-footer {
   text-align: right;
 }
-
+ 
 .modal-footer button {
   margin-left: 5px;
   padding: 5px 10px;
   cursor: pointer;
 }
-
+ 
 .modal-footer button:first-child {
   margin-left: 0;
 }
-
-
+ 
+ 
 /* Style for footer */
 .footer {
   position:fixed;
@@ -244,14 +250,10 @@ label {
   height:40px;
   border-top: 2px solid #747373;
   z-index: 9999;
- } 
-
+ }
+ 
 /* Style for Navbar */
 .navbar {
-  /* font-family: "Nunito Regular", sans-serif;
-  margin-bottom: 15px;
-  width:100%;
-  border-bottom: 2px solid #747373; */
   font-family: "Nunito Regular", sans-serif;
   margin-bottom: 15px;
   width: 100%;
@@ -262,27 +264,27 @@ label {
   right: 0;
   z-index: 9999;
 }
-
+ 
 .navbar-logo {
-  width: 125px; 
+  width: 125px;
   float: left;
   height:60px;
   margin: 10px 5px 5px 5px;
 }
-
+ 
 .navbar ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
   /* background-color: white; */
-  background-color: black; 
+  background-color: black;
 }
-
+ 
 .navbar li {
   float: left;
 }
-
+ 
 .navbar li a {
   display: block;
   /* color: black; */
@@ -292,13 +294,13 @@ label {
   padding: 25px 30px;
   text-decoration: none;
 }
-
+ 
 .navbar li a:hover {
   background-color: #c1bfbf;
   transition: background-color 0.6s ease;
 }
-    
-
+   
+ 
 /* Style Confirmation */
 .confirmation-popup {
   position: fixed;
@@ -311,7 +313,7 @@ label {
   justify-content: center;
   align-items: center;
 }
-
+ 
 .confirmation-content {
   background-color: #fff;
   border-radius: 5px;
@@ -319,16 +321,16 @@ label {
   width: 300px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+ 
 .confirmation-content p {
   margin-bottom: 20px;
 }
-
+ 
 .button-container {
   display: flex;
   justify-content: flex-end;
 }
-
+ 
 .confirm-btn, .cancel-btn {
   margin: 5px;
   padding: 8px 20px;
@@ -336,29 +338,133 @@ label {
   border-radius: 4px;
   cursor: pointer;
 }
-
+ 
 .confirm-btn {
   border: 2px outset #333;
   border-radius: 8px;
   background-color: #333;
   color: white;
 }
-
+ 
 .cancel-btn {
   border: 2px outset #333;
   border-radius: 8px;
   background-color: transparent;
   color: #000;
 }
-
+ 
 .confirmation-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 50px;
 }
-
-
+ 
+.login-container {
+  background-color: #dad8d8;
+  color: black;
+  padding: 20px;
+  border-radius: 5px;
+  transform: translate(155%,90%);
+  width: 300px;
+}
+ 
+.input-field {
+  margin-bottom: 10px;
+  padding: 4px;
+  width: 100%;
+  border: 1px solid #555;
+  border-radius: 3px;
+}
+ 
+/* Login Page */
+.login-container {
+  margin-top: -10%;
+  margin-left: -30%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  width: 35%;
+  border-radius: 2%;
+}
+ 
+ 
+.login-container h2 {
+  text-align: center;
+  color: black;
+}
+ 
+.input-field {
+  margin-bottom: 10px;
+  border:none;
+}
+ 
+.input-field label {
+  display: block;
+  margin-bottom: 5px;
+  color: black;
+}
+ 
+.input-field input[type="email"],
+.input-field input[type="password"] {
+  width: 90%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+ 
+.styled-button-UR{
+  margin: 5px 5px 0px 5px;
+  padding: 8px;
+  border: none;
+  border-radius: 3px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+ 
+.styled-button {
+  margin-left: 24%;
+  width: 50%;
+  padding-bottom: 4px;
+  border: none;
+  border-radius: 3px;
+  background-color: #333;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+ 
+.styled-button:hover {
+  background-color: #555;
+}
+ 
+.error-message {
+  color: red;
+}
+/* .login-button {
+  background-color: black;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+ 
+.login-button:hover {
+  background-color: #555;
+} */
+ 
+.student-container{
+  background-color: #dad8d8;
+  color: black;
+  padding: 20px;
+  border-radius: 5px;
+  transform: translate(155%,90%);
+  width: 300px;
+}
+ 
 @media (max-width: 768px) {
   .home {
     display: block;
@@ -369,9 +475,10 @@ label {
   left: 0;
   right:0;
   text-align: center;
-  flex-direction: row; 
-  } 
+  flex-direction: row;
+  }
   .navbar li {
     margin: 1rem 0;
   }
 }
+
